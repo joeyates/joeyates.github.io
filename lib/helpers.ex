@@ -8,6 +8,20 @@ defmodule Helpers do
       import FermoHelpers.Links
 
       def environment, do: System.get_env("BUILD_ENV")
+
+      def posts do
+        result = query!("""
+          query MyQuery {
+            allPosts {
+              id
+              slug
+              title
+            }
+          }
+        """)
+
+        result[:allPosts]
+      end
     end
   end
 end

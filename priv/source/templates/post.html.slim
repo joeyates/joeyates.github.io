@@ -1,0 +1,19 @@
+elixir:
+  result = query!("""
+    query Post($id: ItemId) {
+      post(filter: {id: {eq: $id}}) {
+        id
+        title
+      }
+    }
+  """, %{id: params.id})
+
+  page = result[:post]
+
+header
+  .wrap
+    h1
+      = page.title
+
+section.wrap
+  = "body"

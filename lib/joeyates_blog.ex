@@ -27,6 +27,20 @@ defmodule JoeyatesBlog do
 
     config = Fermo.Config.add_static(config, "CNAME", "CNAME")
 
+    config =
+      Enum.reduce(
+        posts(),
+        config,
+        fn post, acc ->
+          page(
+            acc,
+            "/templates/post.html.slim",
+            "#{post.slug}/index.html",
+            %{id: post.id}
+          )
+        end
+      )
+
     {:ok, config}
   end
 end
