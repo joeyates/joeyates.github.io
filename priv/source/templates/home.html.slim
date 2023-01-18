@@ -1,12 +1,12 @@
 elixir:
   result = query!("""
-    query MyQuery($locale: SiteLocale!) {
-      home(locale: $locale) {
+    query MyQuery {
+      home {
         title
         abstract
       }
     }
-  """, %{locale: params.locale})
+  """)
 
   page = result[:home]
 

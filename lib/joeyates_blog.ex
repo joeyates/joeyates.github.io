@@ -22,7 +22,7 @@ defmodule JoeyatesBlog do
       config,
       "/templates/home.html.slim",
       "/index.html",
-      %{id: "home", locale: :en}
+      %{id: "home"}
     )
 
     config = Fermo.Config.add_static(config, "CNAME", "CNAME")
