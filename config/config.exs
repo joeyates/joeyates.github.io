@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :slime, :keep_lines, true
 config :yamerl, node_mods: []
