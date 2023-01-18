@@ -27,6 +27,13 @@ defmodule JoeyatesBlog do
 
     config = Fermo.Config.add_static(config, "CNAME", "CNAME")
 
+    config = page(
+      config,
+      "/templates/redirect.html.slim",
+      "/2016/02/04/trying-flow/index.html",
+      %{location: "/callbacks-in-objective-c/"}
+    )
+
     config =
       Enum.reduce(
         posts(),
