@@ -4,10 +4,12 @@ set -euo pipefail
 set -x
 
 rm -rf build
+git checkout source
+git branch -D temp || true
+git checkout -b temp
 
 MIX_ENV=prod BASE_URL=https://joeyates.info mix fermo.build
 
-git checkout -b temp
 git add -f build
 git commit -m "Build"
 git push origin `git subtree split --prefix build temp`:gh-pages --force
