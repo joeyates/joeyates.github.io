@@ -25,6 +25,8 @@ defmodule JoeyatesBlog do
       %{id: "home", locale: :en}
     )
 
+    config = Fermo.Config.add_static(config, "CNAME", "CNAME")
+
     {:ok, config}
   end
 end
