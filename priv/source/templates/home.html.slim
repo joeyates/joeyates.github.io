@@ -13,10 +13,21 @@ elixir:
 
   page = result[:home]
 
+  latestPosts =
+    posts()
+    |> Enum.sort_by(&(&1._createdAt))
+    |> Enum.reverse()
+    |> Enum.take(10)
+
 header
   .wrap
     h1
       = page.title
 
 section.wrap
-  = page.abstract
+  h1 Most Recent Posts
+
+  ul
+    = Enum.map latestPosts, fn post ->
+      li
+        a href="/posts/#{post.slug}" = post.title

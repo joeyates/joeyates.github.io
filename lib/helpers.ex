@@ -10,18 +10,18 @@ defmodule Helpers do
       def environment, do: System.get_env("BUILD_ENV")
 
       def posts do
-        result = query!("""
-          query MyQuery {
-            allPosts {
-              id
-              slug
-              title
-              oldPath
-            }
+        fetch_all!(
+          :allPosts,
+          """
+          {
+            id
+            _createdAt
+            slug
+            title
+            oldPath
           }
-        """)
-
-        result[:allPosts]
+          """
+        )
       end
 
       def post(id) do
@@ -29,6 +29,7 @@ defmodule Helpers do
           query Post($id: ItemId) {
             post(filter: {id: {eq: $id}}) {
               id
+              _createdAt
               title
               body {
                 blocks
