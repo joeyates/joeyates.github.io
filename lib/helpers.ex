@@ -30,11 +30,31 @@ defmodule Helpers do
             post(filter: {id: {eq: $id}}) {
               id
               title
+              body {
+                blocks
+                value
+                links
+              }
+              categories {
+                name
+                slug
+              }
             }
           }
         """, %{id: id})
 
         result[:post]
+      end
+
+      @blank_dast %{
+        value: %{
+          schema: "dast", document: %{type: "root", children: []}
+        }
+      }
+
+      def structured_text_to_html(dast) do
+        dast = dast || @blank_dast
+        DatoCMS.StructuredText.to_html(dast)
       end
     end
   end
