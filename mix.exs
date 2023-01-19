@@ -23,7 +23,7 @@ defmodule JoeyatesBlog.MixProject do
   defp deps do
     [
       {:fermo, "0.16.2"}  ,
-  {:datocms_graphql_client, "~> 0.14.3"},
+  {:datocms_graphql_client, "~> 0.15.4"},
   {:fermo_datocms_graphql_client, "~> 0.14.3"},
   {:fermo_helpers, "~> 0.12.0"}
 
