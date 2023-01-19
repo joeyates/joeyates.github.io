@@ -1,23 +1,7 @@
 - content_for(:title)
   = "Joe Yates' Blog"
 
-elixir:
-  result = query!("""
-    query MyQuery {
-      home {
-        title
-        abstract
-      }
-    }
-  """)
-
-  page = result[:home]
-
-  latestPosts =
-    posts()
-    |> Enum.sort_by(&(&1._createdAt))
-    |> Enum.reverse()
-    |> Enum.take(10)
+- page = home()
 
 header
   .wrap
@@ -27,6 +11,7 @@ header
 section.wrap
   h1 Most Recent Posts
 
+  - latestPosts = latestPosts()
   ul
     = Enum.map latestPosts, fn post ->
       li

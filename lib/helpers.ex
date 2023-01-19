@@ -9,6 +9,19 @@ defmodule Helpers do
 
       def environment, do: System.get_env("BUILD_ENV")
 
+      def home do
+        result = query!("""
+          query MyQuery {
+            home {
+              title
+              abstract
+            }
+          }
+        """)
+
+        page = result[:home]
+      end
+
       def posts do
         fetch_all!(
           :allPosts,
@@ -22,6 +35,13 @@ defmodule Helpers do
           }
           """
         )
+      end
+
+      def latestPosts(count \\ 10) do
+        posts()
+        |> Enum.sort_by(&(&1._createdAt))
+        |> Enum.reverse()
+        |> Enum.take(count)
       end
 
       def post(id) do
