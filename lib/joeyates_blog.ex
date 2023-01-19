@@ -27,27 +27,33 @@ defmodule JoeyatesBlog do
 
     config = Fermo.Config.add_static(config, "CNAME", "CNAME")
 
-    config = page(
-      config,
-      "/templates/redirect.html.slim",
-      "/2016/02/04/trying-flow/index.html",
-      %{location: "/callbacks-in-objective-c/"}
-    )
-
-    config =
-      Enum.reduce(
-        posts(),
-        config,
-        fn post, acc ->
-          page(
-            acc,
-            "/templates/post.html.slim",
-            "#{post.slug}/index.html",
-            %{id: post.id}
-          )
-        end
-      )
+    config = addPosts(config)
 
     {:ok, config}
+  end
+
+  defp addPosts(config) do
+    Enum.reduce(
+      posts(),
+      config,
+      fn post, acc ->
+        acc = page(
+          acc,
+          "/templates/post.html.slim",
+          "/posts/#{post.slug}/index.html",
+          %{id: post.id}
+        )
+        if post.oldPath == "" do
+          acc
+        else
+          page(
+            acc,
+            "/templates/redirect.html.slim",
+            "#{post.oldPath}/index.html",
+            %{location: "/posts/#{post.slug}/"}
+          )
+        end
+      end
+    )
   end
 end

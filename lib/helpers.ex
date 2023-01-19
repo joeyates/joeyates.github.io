@@ -16,6 +16,7 @@ defmodule Helpers do
               id
               slug
               title
+              oldPath
             }
           }
         """)
