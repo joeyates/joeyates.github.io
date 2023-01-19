@@ -23,6 +23,19 @@ defmodule Helpers do
 
         result[:allPosts]
       end
+
+      def post(id) do
+        result = query!("""
+          query Post($id: ItemId) {
+            post(filter: {id: {eq: $id}}) {
+              id
+              title
+            }
+          }
+        """, %{id: id})
+
+        result[:post]
+      end
     end
   end
 end
