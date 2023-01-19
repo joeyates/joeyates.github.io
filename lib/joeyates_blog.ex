@@ -50,7 +50,7 @@ defmodule JoeyatesBlog do
             acc,
             "/templates/redirect.html.slim",
             "#{post.oldPath}/index.html",
-            %{location: "/posts/#{post.slug}/"}
+            %{id: "redirect_#{post.id}", location: "/posts/#{post.slug}/"}
           )
         end
       end
