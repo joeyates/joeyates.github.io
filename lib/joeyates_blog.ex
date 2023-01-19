@@ -25,6 +25,13 @@ defmodule JoeyatesBlog do
       %{id: "home"}
     )
 
+    config = page(
+      config,
+      "/templates/archive.html.slim",
+      "/archive/index.html",
+      %{id: "archive"}
+    )
+
     config = Fermo.Config.add_static(config, "CNAME", "CNAME")
 
     config = addPosts(config)

@@ -1,0 +1,15 @@
+- content_for(:title)
+  = "All Posts"
+
+elixir:
+  allPosts =
+    posts()
+    |> Enum.sort_by(&(&1._createdAt))
+    |> Enum.reverse()
+
+h1 Posts
+
+ul
+  = Enum.map allPosts, fn post ->
+    li
+      a href="/posts/#{post.slug}/" = post.title

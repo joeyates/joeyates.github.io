@@ -30,4 +30,7 @@ section.wrap
   ul
     = Enum.map latestPosts, fn post ->
       li
-        a href="/posts/#{post.slug}" = post.title
+        a href="/posts/#{post.slug}/" = post.title
+
+  p
+    a href="/archive/" All Posts
