@@ -6,5 +6,6 @@ html lang="en"
     title= yield_content(:title)
     = partial "partials/head"
   body
-    = partial "partials/header"
-    main= content
+    .wrap
+      = partial "partials/header"
+      main= content
