@@ -52,9 +52,15 @@ defmodule Helpers do
               _createdAt
               title
               body {
-                blocks
+                blocks {
+                  __typename
+                  id
+                  image {
+                    url
+                  }
+                  caption
+                }
                 value
-                links
               }
               categories {
                 name
@@ -75,7 +81,14 @@ defmodule Helpers do
 
       def structured_text_to_html(dast) do
         dast = dast || @blank_dast
-        DatoCMS.StructuredText.to_html(dast)
+        options = %{
+          renderers: %{render_block: &render_block/3}
+        }
+        DatoCMS.StructuredText.to_html(dast, options)
+      end
+
+      def render_block(%{__typename: "ImagewithcaptionRecord"} = block, _dast, _options) do
+        [~s(<div><h1>#{block.caption}</h1><p><img src="#{block.image.url}"></p></div>)]
       end
     end
   end
