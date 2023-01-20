@@ -27,8 +27,8 @@ defmodule JoeyatesBlog do
 
     config = page(
       config,
-      "/templates/archive.html.slim",
-      "/archive/index.html",
+      "/templates/posts.html.slim",
+      "/posts/index.html",
       %{id: "archive"}
     )
 
