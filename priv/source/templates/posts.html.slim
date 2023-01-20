@@ -4,8 +4,7 @@
 elixir:
   allPosts =
     posts()
-    |> Enum.sort_by(&(&1._createdAt))
-    |> Enum.reverse()
+    |> by_creation_date()
 
 h1 Posts
 

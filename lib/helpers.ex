@@ -37,10 +37,15 @@ defmodule Helpers do
         )
       end
 
-      def latestPosts(count \\ 10) do
-        posts()
+      def by_creation_date(collection) do
+        collection
         |> Enum.sort_by(&(&1._createdAt))
         |> Enum.reverse()
+      end
+
+      def latestPosts(count \\ 10) do
+        posts()
+        |> by_creation_date()
         |> Enum.take(count)
       end
 
