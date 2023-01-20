@@ -1,7 +1,6 @@
 - content_for(:title)
-  = "Joe Yates' Blog"
-
-- page = home()
+  - page = home()
+  = page.title
 
 section.wrap
   h1 Most Recent Posts
