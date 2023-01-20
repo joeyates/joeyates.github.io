@@ -4,10 +4,5 @@
 
 - page = post(params.id)
 
-header
-  .wrap
-    h1
-      = page.title
-
 section.wrap
   = structured_text_to_html(page.body)
