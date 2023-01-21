@@ -3,38 +3,47 @@ defmodule Helpers do
 
   defmacro __using__(_opts \\ %{}) do
     quote do
-      import DatoCMS.GraphQLClient
+      import Fermo.DatoCMS.GraphQLClient, only: [query!: 2, query_for_path!: 3]
       import DatoCMS.GraphQLClient.MetaTagHelpers
       import FermoHelpers.Links
 
       def environment, do: System.get_env("BUILD_ENV")
 
-      def home do
-        result = query!("""
+      def home(for_path \\ nil) do
+        result = query_for_path!(
+          for_path,
+          """
           query MyQuery {
             home {
               title
               abstract
             }
           }
-        """)
+          """,
+          %{}
+        )
 
-        page = result[:home]
+        result[:home]
       end
 
-      def posts do
-        fetch_all!(
-          :allPosts,
+      def posts(for_path \\ nil) do
+        result = query_for_path!(
+          for_path,
           """
-          {
-            id
-            _createdAt
-            slug
-            title
-            oldPath
+          query {
+            allPosts {
+              id
+              _createdAt
+              slug
+              title
+              oldPath
+            }
           }
-          """
+          """,
+          %{}
         )
+
+        result[:allPosts]
       end
 
       def by_creation_date(collection) do
@@ -49,8 +58,10 @@ defmodule Helpers do
         |> Enum.take(count)
       end
 
-      def post(id) do
-        result = query!("""
+      def post(id, for_path \\ nil) do
+        result = query_for_path!(
+          for_path,
+          """
           query Post($id: ItemId) {
             post(filter: {id: {eq: $id}}) {
               id
@@ -73,7 +84,9 @@ defmodule Helpers do
               }
             }
           }
-        """, %{id: id})
+          """,
+          %{id: id}
+        )
 
         result[:post]
       end
