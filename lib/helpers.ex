@@ -31,7 +31,7 @@ defmodule Helpers do
           for_path,
           """
           query {
-            allPosts {
+            allPosts(orderBy: _createdAt_DESC) {
               id
               _createdAt
               slug
