@@ -16,4 +16,4 @@ merged = Keyword.merge(
   live: true
 )
 
-Application.put_env(:datocms_graphql_client, :config, merged)
+config :datocms_graphql_client, :config, merged
