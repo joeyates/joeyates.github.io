@@ -3,9 +3,13 @@ defmodule Helpers do
 
   defmacro __using__(_opts \\ %{}) do
     quote do
-      import Fermo.DatoCMS.GraphQLClient, only: [query!: 2, query_for_path!: 3]
+      import Fermo.DatoCMS.GraphQLClient, only: [
+        query!: 1, query!: 2, query_for_path!: 3
+      ]
       import DatoCMS.GraphQLClient.MetaTagHelpers
       import FermoHelpers.Links
+
+      @posts_per_page 20
 
       def environment, do: System.get_env("BUILD_ENV")
 
@@ -26,12 +30,29 @@ defmodule Helpers do
         result[:home]
       end
 
-      def posts(for_path \\ nil) do
+      def post_count() do
+        result = query!(
+          """
+          query {
+            _allPostsMeta { count }
+          }
+          """
+        )
+
+        result._allPostsMeta.count
+      end
+
+      def posts_per_page, do: @posts_per_page
+
+      def posts_page(for_path, opts \\ []) do
+        per_page = Keyword.get(opts, :per_page, @posts_per_page)
+        page = Keyword.get(opts, :page, 1)
+        skip = (page - 1) * per_page
         result = query_for_path!(
           for_path,
           """
-          query {
-            allPosts(orderBy: _createdAt_DESC) {
+          query($first: IntType, $skip: IntType)  {
+            allPosts(orderBy: _createdAt_DESC, skip: $skip, first: $first) {
               id
               _createdAt
               slug
@@ -40,7 +61,7 @@ defmodule Helpers do
             }
           }
           """,
-          %{}
+          %{skip: skip, first: per_page}
         )
 
         result[:allPosts]
@@ -52,8 +73,10 @@ defmodule Helpers do
         |> Enum.reverse()
       end
 
-      def latestPosts(count \\ 10) do
-        posts()
+      def latest_posts(for_page, opts \\ []) do
+        count = Keyword.get(opts, :count, 10)
+
+        posts_page(for_page)
         |> by_creation_date()
         |> Enum.take(count)
       end
