@@ -54,15 +54,23 @@ defmodule JoeyatesBlog do
           }
         )
 
-        Enum.reduce(
-          CMS.Post.page(nil, page: i),
+        posts = CMS.Post.page(nil, page: i)
+        posts
+        |> Enum.with_index()
+        |> Enum.reduce(
           acc,
-          fn post, acc1 ->
+          fn {post, j}, acc1 ->
+            previous = if j > 0, do: Enum.at(posts, j - 1)
+            next = Enum.at(posts, j + 1)
             acc1 = page(
               acc1,
               "/templates/post.html.slim",
               "/posts/#{post.slug}/index.html",
-              %{id: post.id}
+              %{
+                id: post.id,
+                previous: previous,
+                next: next
+              }
             )
 
             if post.old_path == "" do
