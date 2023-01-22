@@ -1,15 +1,31 @@
 - content_for(:title)
-  = "Posts #{params.page}"
+  elixir:
+    posts =
+      CMS.Post.page(params.path, page: params.page)
+      |> CMS.by_creation_date()
+    first_year = hd(posts).created_at.year
+    last_year = Enum.at(posts, -1).created_at.year
+    period = if first_year == last_year do
+      first_year
+    else
+      "#{first_year} - #{last_year}"
+    end
+  = "Posts #{period}"
 
 elixir:
-  posts =
+  posts_by_year =
     CMS.Post.page(params.path, page: params.page)
-    |> CMS.by_creation_date()
+    |> Enum.group_by(&(&1.created_at.year))
+  years = Map.keys(posts_by_year) |> Enum.sort() |> Enum.reverse()
 
-ul
-  = Enum.map posts, fn post ->
-    li
-      a href="/posts/#{post.slug}/" = post.title
+= Enum.map years, fn year ->
+  - posts = posts_by_year[year]
+  - by_date = posts |> CMS.by_creation_date() |> Enum.reverse()
+  h3 = year
+  ul
+    = Enum.map by_date, fn post ->
+      li
+        a href="/posts/#{post.slug}/" = post.title
 
 .pagination
   ul

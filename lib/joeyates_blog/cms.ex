@@ -33,6 +33,5 @@ defmodule JoeyatesBlog.CMS do
           :lt -> false
         end
       end)
-    |> Enum.reverse()
   end
 end

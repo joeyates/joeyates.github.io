@@ -86,6 +86,7 @@ defmodule JoeyatesBlog.CMS.Post do
 
     page(for_page)
     |> CMS.by_creation_date()
+    |> Enum.reverse()
     |> Enum.take(count)
   end
 
