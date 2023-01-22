@@ -3,7 +3,7 @@
   = page.title
 
 - page = CMS.Post.get!(params.id)
-- date = date_to_s(page._createdAt)
+- date = date_to_s(page.created_at)
 section.post
   .date
     p = "Published: #{date}"

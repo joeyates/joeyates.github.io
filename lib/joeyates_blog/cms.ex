@@ -28,7 +28,7 @@ defmodule JoeyatesBlog.CMS do
     collection
     |> Enum.sort(
       fn x, y ->
-        case DateTime.compare(y._createdAt, x._createdAt) do
+        case DateTime.compare(y.created_at, x.created_at) do
           :gt -> true
           :lt -> false
         end

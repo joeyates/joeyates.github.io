@@ -5,8 +5,8 @@ defmodule JoeyatesBlog.CMS.Post do
 
   alias JoeyatesBlog.CMS
 
-  @enforce_keys ~w(id _createdAt title)a
-  defstruct ~w(id _createdAt slug oldPath title body categories)a
+  @enforce_keys ~w(id created_at title)a
+  defstruct ~w(id created_at slug old_path title body categories)a
 
   @per_page 20
 
@@ -90,8 +90,29 @@ defmodule JoeyatesBlog.CMS.Post do
   end
 
   def new(data) when is_map(data) do
-    {:ok, date_time, _} = DateTime.from_iso8601(data._createdAt)
-    data = Map.put(data, :_createdAt, date_time)
+    {:ok, created_at, _} = DateTime.from_iso8601(data._createdAt)
+    data =
+      data
+      |> Map.put(:_createdAt, created_at)
+      |> snakify_keys()
+
     struct!(__MODULE__, data)
+  end
+
+  defp snakify_keys(data) when is_map(data) do
+    data
+    |> Enum.map(fn {key, value} ->
+      string = Atom.to_string(key)
+      snakified =
+        Regex.replace(
+          ~r/([a-z])([A-Z])/,
+          string,
+          fn _, lower, upper -> "#{lower}_#{String.downcase(upper)}" end
+        )
+        |> String.replace(~r/^_/, "")
+        |> String.to_atom()
+      {snakified, value}
+    end)
+    |> Enum.into(%{})
   end
 end

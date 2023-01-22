@@ -65,13 +65,13 @@ defmodule JoeyatesBlog do
               %{id: post.id}
             )
 
-            if post.oldPath == "" do
+            if post.old_path == "" do
               acc1
             else
               page(
                 acc1,
                 "/templates/redirect.html.slim",
-                "#{post.oldPath}index.html",
+                "#{post.old_path}index.html",
                 %{id: "redirect_#{post.id}", location: "/posts/#{post.slug}/"}
               )
             end
