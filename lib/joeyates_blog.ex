@@ -22,7 +22,7 @@ defmodule JoeyatesBlog do
       config,
       "/templates/home.html.slim",
       "/index.html",
-      %{id: "home"}
+      %{id: "home", path: "/"}
     )
 
     config = page(

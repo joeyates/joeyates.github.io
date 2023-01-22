@@ -9,7 +9,7 @@ defmodule Helpers do
 
       def environment, do: System.get_env("BUILD_ENV")
 
-      def home(for_path \\ nil) do
+      def home(for_path) do
         result = query_for_path!(
           for_path,
           """
