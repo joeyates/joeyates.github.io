@@ -1,9 +1,9 @@
 - content_for(:title)
-  - page = home(params.path)
+  - page = CMS.home(params.path)
   = page.title
 
 section
-  - latest_posts = latest_posts(params.path)
+  - latest_posts = CMS.latest_posts(params.path)
   ul
     = Enum.map latest_posts, fn post ->
       li

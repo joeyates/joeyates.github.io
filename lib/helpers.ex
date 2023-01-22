@@ -5,7 +5,7 @@ defmodule Helpers do
     quote do
       import DatoCMS.GraphQLClient.MetaTagHelpers
       import FermoHelpers.Links
-      import JoeyatesBlog.CMS
+      alias JoeyatesBlog.CMS
 
       def environment, do: System.get_env("BUILD_ENV")
 

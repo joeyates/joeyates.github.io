@@ -33,8 +33,8 @@ defmodule JoeyatesBlog do
   end
 
   defp add_posts(config) do
-    post_count = post_count()
-    index_page_count = Kernel.div(post_count - 1, posts_per_page()) + 1
+    post_count = CMS.post_count()
+    index_page_count = Kernel.div(post_count - 1, CMS.posts_per_page()) + 1
 
     Enum.reduce(
       1..index_page_count,
@@ -55,7 +55,7 @@ defmodule JoeyatesBlog do
         )
 
         Enum.reduce(
-          posts_page(nil, page: i),
+          CMS.posts_page(nil, page: i),
           acc,
           fn post, acc1 ->
             acc1 = page(

@@ -3,8 +3,8 @@
 
 elixir:
   posts =
-    posts_page(params.path, page: params.page)
-    |> by_creation_date()
+    CMS.posts_page(params.path, page: params.page)
+    |> CMS.by_creation_date()
 
 ul
   = Enum.map posts, fn post ->
