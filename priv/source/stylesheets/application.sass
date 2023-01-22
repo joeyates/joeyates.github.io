@@ -6,13 +6,29 @@ body
   margin-right: auto
   background-color: olive
   font-family: verdana, arial, helvetica, sans-serif
+  font-size: 20pt
+  line-height: 1.5
 
-@media only screen and (min-device-width: $tablet-min)
-  body
+  @media only screen and (min-device-width: $tablet-min)
     max-width: 600px
+    font-size: 12pt
+
+*
+  margin: 0
+  padding: 0
+
+h1
+  padding: 10px 0 5px 0
 
 ul
-  padding: 0 0 0 13px
+  padding: 5px 0 5px 0
+
+li
+  margin: 0 0 0 10px
+
+  @media only screen and (min-device-width: $tablet-min)
+    margin: 0 0 0 20px
+    padding: 0 0 10px 0
 
 a
   color: black
@@ -24,10 +40,24 @@ a
     color: olive
 
 pre
+  margin: 5px 0
   padding: 5px
   overflow: scroll
   background-color: #303030
   color: white
+  font-size: 20pt
+
+  @media only screen and (min-device-width: $tablet-min)
+    font-size: 10pt
+
+nav
+  ul
+    display: flex
+    list-style-type: none
+
+  li
+    margin: 0 5px 0 0
+    padding: 0
 
 .wrap
   margin: 10px
@@ -35,4 +65,23 @@ pre
   overflow: scroll
   background-color: #f0f0d0
 
-main
+.post
+  li
+    padding: 2px
+
+  .date
+    display: flex
+    justify-content: right
+    margin: 0 0 5px 0
+
+.pagination
+  display: flex
+  justify-content: center
+
+  ul
+    display: flex
+    list-style-type: none
+
+  li
+    margin: 0 15px 0 0
+    padding: 0

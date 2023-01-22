@@ -1,8 +1,11 @@
 - content_for(:title)
-  - page = post(params.id)
+  - page = CMS.Post.get!(params.id)
   = page.title
 
-- page = post(params.id)
+- page = CMS.Post.get!(params.id)
+- date = date_to_s(page._createdAt)
+section.post
+  .date
+    p = "Published: #{date}"
 
-section
   = structured_text_to_html(page.body)

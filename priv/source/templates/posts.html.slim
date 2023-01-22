@@ -1,14 +1,29 @@
 - content_for(:title)
-  = "All Posts"
+  = "Posts #{params.page}"
 
 elixir:
-  allPosts =
-    posts()
-    |> by_creation_date()
-
-h1 Posts
+  posts =
+    CMS.Post.page(params.path, page: params.page)
+    |> CMS.by_creation_date()
 
 ul
-  = Enum.map allPosts, fn post ->
+  = Enum.map posts, fn post ->
     li
       a href="/posts/#{post.slug}/" = post.title
+
+.pagination
+  ul
+    li
+      a href="/posts/" ="|<"
+    li
+      = if params.page > 1 do
+        a href="/posts/" ="<"
+      - else
+        a ="<"
+    li
+      = if params.page < params.page_count do
+        a href="/posts/#{params.page + 1}/" =">"
+      - else
+        a =">"
+    li
+      a href="/posts/#{params.page_count}/" =">|"

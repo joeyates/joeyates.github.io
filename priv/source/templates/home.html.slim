@@ -1,15 +1,10 @@
 - content_for(:title)
-  - page = home()
+  - page = CMS.home(params.path)
   = page.title
 
 section
-  h1 Most Recent Posts
-
-  - latestPosts = latestPosts()
+  - latest_posts = CMS.Post.latest(params.path)
   ul
-    = Enum.map latestPosts, fn post ->
+    = Enum.map latest_posts, fn post ->
       li
         a href="/posts/#{post.slug}/" = post.title
-
-  p
-    a href="/posts/" All Posts
