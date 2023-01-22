@@ -1,8 +1,8 @@
 - content_for(:title)
-  - page = CMS.post(params.id)
+  - page = CMS.Post.get!(params.id)
   = page.title
 
-- page = CMS.post(params.id)
+- page = CMS.Post.get!(params.id)
 
 section.post
   = structured_text_to_html(page.body)

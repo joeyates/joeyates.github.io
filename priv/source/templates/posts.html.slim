@@ -3,7 +3,7 @@
 
 elixir:
   posts =
-    CMS.posts_page(params.path, page: params.page)
+    CMS.Post.page(params.path, page: params.page)
     |> CMS.by_creation_date()
 
 ul

@@ -3,7 +3,7 @@
   = page.title
 
 section
-  - latest_posts = CMS.latest_posts(params.path)
+  - latest_posts = CMS.Post.latest(params.path)
   ul
     = Enum.map latest_posts, fn post ->
       li
