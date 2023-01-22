@@ -1,34 +1,37 @@
 $tablet-min: 768px
 $desktop-min: 1024px
 
+html
+  font-size: 220%
+  font-family: verdana, arial, helvetica, sans-serif
+
+  @media only screen and (min-device-width: $tablet-min)
+    font-size: 120%
+
 body
   margin-left: auto
   margin-right: auto
   background-color: olive
-  font-family: verdana, arial, helvetica, sans-serif
-  font-size: 20pt
   line-height: 1.5
 
   @media only screen and (min-device-width: $tablet-min)
-    max-width: 600px
-    font-size: 12pt
+    max-width: 36rem
 
 *
   margin: 0
   padding: 0
 
 h1
-  padding: 10px 0 5px 0
+  padding: 0.8rem 0 0.4rem 0
 
 ul
-  padding: 5px 0 5px 0
+  padding: 0.4rem 0 0.4rem 0
 
 li
-  margin: 0 0 0 10px
+  margin: 0 0 0 1.6rem
 
   @media only screen and (min-device-width: $tablet-min)
-    margin: 0 0 0 20px
-    padding: 0 0 10px 0
+    padding: 0 0 0.8rem 0
 
 a
   color: black
@@ -40,48 +43,86 @@ a
     color: olive
 
 pre
-  margin: 5px 0
-  padding: 5px
+  margin: 0.5rem 1rem
+  padding: 0.5rem
   overflow: scroll
   background-color: #303030
   color: white
-  font-size: 20pt
+  font-size: 1.1rem
 
   @media only screen and (min-device-width: $tablet-min)
-    font-size: 10pt
+    font-size: 1rem
 
 nav
+  font-size: 1.4rem
+
+  @media only screen and (min-device-width: $tablet-min)
+    font-size: 1.2rem
+
   ul
     display: flex
     list-style-type: none
 
   li
-    margin: 0 5px 0 0
+    margin: 0 0.5rem 0 0
     padding: 0
 
 .wrap
-  margin: 10px
-  padding: 10px
+  margin: 0.8rem
+  padding: 0.8rem
   overflow: scroll
   background-color: #f0f0d0
 
 .post
+  ul
+    padding: 0
+
   li
-    padding: 2px
+    padding: 0
+    line-height: 1.2
+
+  h1
+    font-size: 1.4rem
+
+  h2
+    padding: 1rem 0 0 0
+    font-size: 1.0rem
+
+  h3
+    font-size: 0.8rem
 
   .date
     display: flex
     justify-content: right
-    margin: 0 0 5px 0
+    margin: 0 0 0.2rem 0
+
+  .image_with_caption
+    width: 100%
+    margin: 1rem 0
+    display: flex
+    justify-content: center
+    flex-flow: column
+
+    img
+      margin: 0 3rem
+
+    .caption
+      font-size: 0.9rem
+      display: flex
+      justify-content: center
 
 .pagination
   display: flex
   justify-content: center
+  font-size: 1.9rem
+
+  @media only screen and (min-device-width: $tablet-min)
+    font-size: 1.3rem
 
   ul
     display: flex
     list-style-type: none
 
   li
-    margin: 0 15px 0 0
+    margin: 0 1.3rem 0 0
     padding: 0
