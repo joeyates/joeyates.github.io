@@ -26,6 +26,10 @@ defmodule Helpers do
       def render_block(%{__typename: "ImagewithcaptionRecord"} = block, _dast, _options) do
         [~s(<div><h1>#{block.caption}</h1><p><img src="#{block.image.url}"></p></div>)]
       end
+
+      def date_to_s(%{year: year, month: month, day: day}) do
+        "#{year}/#{month}/#{day}"
+      end
     end
   end
 end

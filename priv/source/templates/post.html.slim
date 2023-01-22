@@ -3,6 +3,9 @@
   = page.title
 
 - page = CMS.Post.get!(params.id)
-
+- date = date_to_s(page._createdAt)
 section.post
+  .date
+    p = "Published: #{date}"
+
   = structured_text_to_html(page.body)
