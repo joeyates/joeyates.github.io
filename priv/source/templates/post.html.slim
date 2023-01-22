@@ -6,6 +6,6 @@
 - date = date_to_s(page.created_at)
 section.post
   .date
-    p = "Published: #{date}"
+    p = date
 
   = structured_text_to_html(page.body)
