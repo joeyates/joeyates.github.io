@@ -14,7 +14,7 @@ defmodule JoeyatesBlog do
   use Helpers
 
   def config do
-    DatoCMS.GraphQLClient.configure()
+    CMS.setup()
 
     config = initial_config()
 

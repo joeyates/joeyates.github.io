@@ -5,6 +5,10 @@ defmodule JoeyatesBlog.CMS do
 
   @posts_per_page 20
 
+  def setup do
+    DatoCMS.GraphQLClient.configure()
+  end
+
   def home(for_path) do
     result = GraphQLClient.query_for_path!(
       for_path,
