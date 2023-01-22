@@ -4,7 +4,7 @@ defmodule JoeyatesBlog do
   """
 
   use Fermo, %{
-    base_url: Application.fetch_env!(:fermo, :base_url),
+    base_url: Application.compile_env!(:fermo, :base_url),
     i18n: [:en],
     localized_paths: true,
     exclude: ["templates/*", "layouts/*", "javascripts/*", "stylesheets/*"]
