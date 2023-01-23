@@ -5,38 +5,13 @@ defmodule Helpers do
     quote do
       import DatoCMS.GraphQLClient.MetaTagHelpers
       import FermoHelpers.Links
+      import JoeyatesBlog.Rendering, only: [
+        date_to_s: 1,
+        structured_text_to_html: 1
+      ]
       alias JoeyatesBlog.CMS
 
       def environment, do: System.get_env("BUILD_ENV")
-
-      @blank_dast %{
-        value: %{
-          schema: "dast", document: %{type: "root", children: []}
-        }
-      }
-
-      def structured_text_to_html(dast) do
-        dast = dast || @blank_dast
-        options = %{
-          renderers: %{render_block: &render_block/3}
-        }
-        DatoCMS.StructuredText.to_html(dast, options)
-      end
-
-      def render_block(%{__typename: "ImagewithcaptionRecord"} = block, _dast, _options) do
-        [
-          ~s(
-            <div class="image_with_caption">
-              <img src="#{block.image.url}?w=600"/>
-              <p class="caption">#{block.caption}</p>
-            </div>
-          )
-        ]
-      end
-
-      def date_to_s(%{year: year, month: month, day: day}) do
-        "#{year}/#{month}/#{day}"
-      end
     end
   end
 end
