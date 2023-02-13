@@ -1,27 +1,40 @@
 $tablet-min: 768px
 $desktop-min: 1024px
 
-html
-  font-size: 220%
-  font-family: verdana, arial, helvetica, sans-serif
+:root
+  // Sizes
+  --body-width: 50rem
 
-  @media only screen and (min-device-width: $tablet-min)
-    font-size: 120%
-
-body
-  margin-left: auto
-  margin-right: auto
-  background-color: olive
-  line-height: 1.5
-
-  @media only screen and (min-device-width: $tablet-min)
-    max-width: 36rem
+  // Colours
+  --background-colour: olive
+  --body-background-colour: #f0f0d0
+  --table-border-colour: #202000
+  --table-cell-border-colour: #404020
+  --table-row-odd-colour: #f0f0d0
+  --table-row-even-colour: #e0e0c0
 
 *
   margin: 0
   padding: 0
 
+html
+  font-size: 240%
+  font-family: verdana, arial, helvetica, sans-serif
+
+  @media only screen and (min-device-width: $tablet-min)
+    font-size: 100%
+
+body
+  margin-left: auto
+  margin-right: auto
+  background-color: var(--background-colour)
+  line-height: 1.5
+
+  @media only screen and (min-device-width: $tablet-min)
+    max-width: var(--body-width)
+
 h1
+  font-size: 2rem
   padding: 0.8rem 0 0.4rem 0
 
 ul
@@ -43,18 +56,18 @@ a
     color: olive
 
 pre
-  margin: 0.5rem 1rem
+  margin: 0.5rem 0.6rem
   padding: 0.5rem
   overflow: scroll
   background-color: #303030
   color: white
-  font-size: 1.1rem
+  font-size: 0.9rem
 
   @media only screen and (min-device-width: $tablet-min)
     font-size: 1rem
 
 nav
-  font-size: 1.4rem
+  font-size: 1.2rem
 
   @media only screen and (min-device-width: $tablet-min)
     font-size: 1.2rem
@@ -71,7 +84,7 @@ nav
   margin: 0.8rem
   padding: 0.8rem
   overflow: scroll
-  background-color: #f0f0d0
+  background-color: var(--body-background-colour)
 
 .post
   ul
@@ -86,10 +99,10 @@ nav
 
   h2
     padding: 1rem 0 0 0
-    font-size: 1.0rem
+    font-size: 1.2rem
 
   h3
-    font-size: 0.8rem
+    font-size: 1.1rem
 
   .date
     display: flex
@@ -111,20 +124,21 @@ nav
       display: flex
       justify-content: center
 
-  .image_with_caption
-    width: 100%
-    margin: 1rem 0
-    display: flex
-    justify-content: center
-    flex-flow: column
+  .table
+    border-spacing: 0
+    border-collapse: collapse
+    border: 0.1rem solid var(--table-border-colour)
 
-  img
-    margin: 0 3rem
+    tbody
+      tr:nth-child(odd)
+        background-color: var(--table-row-odd-colour)
 
-  .caption
-    font-size: 0.9rem
-    display: flex
-    justify-content: center
+      tr:nth-child(even)
+        background-color: var(--table-row-even-colour)
+
+      td
+        padding: 0.1rem
+        border: 0.1rem solid var(--table-cell-border-colour)
 
 .pagination
   display: flex

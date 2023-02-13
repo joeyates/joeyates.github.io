@@ -1,6 +1,6 @@
 defmodule JoeyatesBlog.Rendering.Table do
   def render(%{data: data}, _dast, _options) do
-    ["<table>"] ++
+    [~S(<table class="table">)] ++
     headers(data) ++
     rows(data) ++
     ["</table>"]
