@@ -36,21 +36,16 @@ defmodule JoeyatesBlog.CMS.Post do
           body {
             blocks {
               __typename
-              ... on DockerfileParameterPermutationRecord {
-                id
-                entrypoint
-                cmd
-                cmdUsed
-                runArgs
-                runArgsUsed
-                outcome
-              }
               ... on ImagewithcaptionRecord {
                 id
                 caption
                 image {
                   url
                 }
+              }
+              ... on TableRecord {
+                id
+                data
               }
             }
             value

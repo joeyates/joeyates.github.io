@@ -1,8 +1,8 @@
 defmodule JoeyatesBlog.Rendering do
   @moduledoc false
 
-  alias JoeyatesBlog.Rendering.DockerfileParameterPermutation
   alias JoeyatesBlog.Rendering.ImageWithCaption
+  alias JoeyatesBlog.Rendering.Table
 
   def date_to_s(%{year: year, month: month, day: day}) do
     "#{year}/#{month}/#{day}"
@@ -22,8 +22,8 @@ defmodule JoeyatesBlog.Rendering do
     DatoCMS.StructuredText.to_html(dast, options)
   end
 
-  def render_block(%{__typename: "DockerfileParameterPermutationRecord"} = block, dast, options) do
-    DockerfileParameterPermutation.render(block, dast, options)
+  def render_block(%{__typename: "TableRecord"} = block, dast, options) do
+    Table.render(block, dast, options)
   end
 
   def render_block(%{__typename: "ImagewithcaptionRecord"} = block, dast, options) do
