@@ -51,10 +51,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
-        use: [
-          {loader: 'import-glob-loader'}
-        ]
+        test: /\.js$/
       },
       {
         test: /\.(gif|ico|jpg|png|svg|eot|ttf|woff|woff2)$/,
