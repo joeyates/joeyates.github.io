@@ -3,6 +3,7 @@ defmodule JoeyatesBlog.Rendering do
 
   alias JoeyatesBlog.Rendering.ImageWithCaption
   alias JoeyatesBlog.Rendering.Table
+  alias DatoCMS.StructuredText
 
   def date_to_s(%{year: year, month: month, day: day}) do
     "#{prepend_zeroes(year, 4)}/#{prepend_zeroes(month)}/#{prepend_zeroes(day)}"
@@ -27,7 +28,10 @@ defmodule JoeyatesBlog.Rendering do
   def structured_text_to_html(dast) do
     dast = dast || @blank_dast
     options = %{
-      renderers: %{render_block: &render_block/3}
+      renderers: %{
+        render_block: &render_block/3,
+        render_code: &render_code/3
+      }
     }
     DatoCMS.StructuredText.to_html(dast, options)
   end
@@ -38,5 +42,16 @@ defmodule JoeyatesBlog.Rendering do
 
   def render_block(%{__typename: "ImagewithcaptionRecord"} = block, dast, options) do
     ImageWithCaption.render(block, dast, options)
+  end
+
+  def render_code(%{type: "code"} = node, _dast, _options) do
+    ~s(<pre><code class="language-#{node.language}">#{node.code}</code></pre>)
+  end
+
+  def render_code(%{marks: ["code" | marks]} = span, dast, options) do
+    other = Map.put(span, :marks, marks)
+    ["<code>"] ++
+      StructuredText.render(other, dast, options) ++
+      ["</code>"]
   end
 end
