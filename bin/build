@@ -3,17 +3,22 @@
 set -euo pipefail
 set -x
 
-rm -rf build
-git checkout source
-git branch -D temp || true
-git checkout -b temp
+MAIN_BRANCH=main
+BUILD_BRANCH=temp
+BUILD_PATH=build
+BASE_URL=https://joeyates.info
 
-MIX_ENV=prod BASE_URL=https://joeyates.info mix fermo.build
+rm -rf $BUILD_PATH
+git checkout $MAIN_BRANCH
+git branch -D $BUILD_BRANCH || true
+git checkout -b $BUILD_BRANCH
 
-git add -f build
+MIX_ENV=prod mix fermo.build
+
+git add -f $BUILD_PATH
 git commit -m "Build"
-git push origin `git subtree split --prefix build temp`:gh-pages --force
-git checkout source
-git branch -D temp
+git push origin `git subtree split --prefix $BUILD_PATH $BUILD_BRANCH`:gh-pages --force
+git checkout $MAIN_BRANCH
+git branch -D $BUILD_BRANCH
 
 echo "Done!"
