@@ -13,6 +13,7 @@ git checkout $MAIN_BRANCH
 git branch -D $BUILD_BRANCH || true
 git checkout -b $BUILD_BRANCH
 
+yarn assets.build
 MIX_ENV=prod mix fermo.build
 
 git add -f $BUILD_PATH
