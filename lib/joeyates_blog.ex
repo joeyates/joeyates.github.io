@@ -7,7 +7,8 @@ defmodule JoeyatesBlog do
     base_url: Application.compile_env!(:fermo, :base_url),
     i18n: [:en],
     localized_paths: true,
-    exclude: ["templates/*", "layouts/*", "javascripts/*", "stylesheets/*"]
+    exclude: ["templates/*", "layouts/*", "javascripts/*", "stylesheets/*"],
+    sitemap: %{}
   }
   import Fermo, only: [page: 4]
 
