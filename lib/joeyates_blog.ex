@@ -3,12 +3,24 @@ defmodule JoeyatesBlog do
   Documentation for `JoeyatesBlog`.
   """
 
+  @statics ~w(
+    android-chrome-192x192.png
+    android-chrome-512x512.png
+    apple-touch-icon.png
+    CNAME
+    favicon-16x16.png
+    favicon-32x32.png
+    favicon.ico
+    site.webmanifest
+  )
+
   use Fermo, %{
     base_url: Application.compile_env!(:fermo, :base_url),
     i18n: [:en],
     localized_paths: true,
     exclude: ["templates/*", "layouts/*", "javascripts/*", "stylesheets/*"],
-    sitemap: %{}
+    sitemap: %{},
+    statics: Enum.map(@statics, &(%{source: &1, filename: &1}))
   }
   import Fermo, only: [page: 4]
 
@@ -25,8 +37,6 @@ defmodule JoeyatesBlog do
       "/index.html",
       %{id: "home", path: "/"}
     )
-
-    config = Fermo.Config.add_static(config, "CNAME", "CNAME")
 
     config = add_posts(config)
 
