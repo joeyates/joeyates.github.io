@@ -4,6 +4,21 @@ alias DatoCMS.GraphQLClient.Backends.StandardClient
 
 Application.put_env(
   :fermo,
+  :live_mode_assets,
+  [
+    {
+      Fermo.Assets.Backends.Script,
+      command: "yarn node bin/esbuild-script.mjs",
+      env: [
+        {'ESBUILD_LOG_LEVEL', 'info'},
+        {'ESBUILD_WATCH', '1'}
+      ]
+    }
+  ]
+)
+
+Application.put_env(
+  :fermo,
   :live_mode_servers,
   [{Registry, keys: :unique, name: :datocms_live_update_query_registry}]
 )
@@ -17,5 +32,3 @@ merged = Keyword.merge(
 )
 
 config :datocms_graphql_client, :config, merged
-
-config :fermo, :live_asset_host, System.fetch_env!("LIVE_ASSET_HOST")
