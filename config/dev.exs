@@ -32,5 +32,3 @@ merged = Keyword.merge(
 )
 
 config :datocms_graphql_client, :config, merged
-
-config :fermo, :live_asset_host, System.fetch_env!("LIVE_ASSET_HOST")
