@@ -1,6 +1,8 @@
 - content_for(:title)
   - page = CMS.home(params.path)
   = page.title
+- content_for(:description)
+  = "Musings about programming, mostly"
 
 section
   - latest_posts = CMS.Post.latest(params.path)

@@ -1,6 +1,9 @@
 - content_for(:title)
   - page = CMS.Post.get!(params.id)
   = page.title
+- content_for(:description)
+  - page = CMS.Post.get!(params.id)
+  = page.description
 
 - page = CMS.Post.get!(params.id)
 - date = date_to_s(page.created_at)

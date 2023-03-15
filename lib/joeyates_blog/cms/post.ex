@@ -6,7 +6,7 @@ defmodule JoeyatesBlog.CMS.Post do
   alias JoeyatesBlog.CMS
 
   @enforce_keys ~w(id created_at title)a
-  defstruct ~w(id created_at slug old_path title body categories)a
+  defstruct ~w(id created_at slug old_path title description body categories)a
 
   @per_page 20
 
@@ -33,6 +33,7 @@ defmodule JoeyatesBlog.CMS.Post do
           id
           _createdAt
           title
+          description
           body {
             blocks {
               __typename

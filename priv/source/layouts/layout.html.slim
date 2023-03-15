@@ -3,9 +3,10 @@
 = "<!DOCTYPE html>"
 html lang="en"
   head
-    title= yield_content(:title)
+    title = yield_content(:title)
+    meta name="description" content=yield_content(:description)
     = partial "partials/head"
   body
     .wrap
       = partial "partials/header"
-      main= content
+      main = content
