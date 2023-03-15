@@ -32,12 +32,7 @@ const config = {
         )
       )
     }),
-    sassPlugin({
-      importMapper: path => {
-        console.log('importMapper path:', path)
-        return path
-      }
-    })
+    sassPlugin()
   ]
 }
 
