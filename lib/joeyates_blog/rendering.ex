@@ -44,8 +44,12 @@ defmodule JoeyatesBlog.Rendering do
     ImageWithCaption.render(block, dast, options)
   end
 
+  def render_code(%{type: "code", language: language} = node, _dast, _options) do
+    ~s(<pre><code class="language-#{language}">#{node.code}</code></pre>)
+  end
+
   def render_code(%{type: "code"} = node, _dast, _options) do
-    ~s(<pre><code class="language-#{node.language}">#{node.code}</code></pre>)
+    ~s(<pre><code>#{node.code}</code></pre>)
   end
 
   def render_code(%{marks: ["code" | marks]} = span, dast, options) do
