@@ -18,5 +18,5 @@ The site is available at `http://localhost:4001`
 # Build
 
 ```sh
-$ mix fermo.build
+$ bin/build
 ```
