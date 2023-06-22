@@ -16,12 +16,13 @@ defmodule JoeyatesBlog.MixProject do
 
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:esbuild, :logger]
     ]
   end
 
-  defp deps do
+  def deps do
     [
+      {:esbuild, "~> 0.7.0"},
       {:fermo, "0.16.2"}  ,
   {:datocms_graphql_client, "~> 0.15.4"},
   {:fermo_datocms_graphql_client, "~> 0.14.3"},
