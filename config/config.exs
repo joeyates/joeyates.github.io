@@ -19,6 +19,16 @@ config :esbuild,
     env: %{"NODE_PATH" => Path.expand("deps", __DIR__)}
   ]
 
+config :tailwind,
+  version: "3.2.7",
+  default: [
+    args: ~w(
+      --config=tailwind.config.js
+      --input=priv/source/app.css
+      --output=../build/assets/app.css
+    )
+  ]
+
 environment_config = "#{Mix.env()}.exs"
 
 if File.regular?(Path.join("config", environment_config)) do
