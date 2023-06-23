@@ -2,3 +2,15 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 @import './stylesheets/prism';
+
+@layer base {
+  a {
+    @apply text-black;
+  }
+  a:hover {
+    @apply text-olive;
+  }
+  a:active {
+    @apply text-olive;
+  }
+}
