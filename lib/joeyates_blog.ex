@@ -6,11 +6,13 @@ defmodule JoeyatesBlog do
   @statics ~w(
     android-chrome-192x192.png
     android-chrome-512x512.png
+    app.css
     apple-touch-icon.png
     CNAME
     favicon-16x16.png
     favicon-32x32.png
     favicon.ico
+    robots.txt
     site.webmanifest
   )
 

@@ -16,17 +16,18 @@ defmodule JoeyatesBlog.MixProject do
 
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:esbuild, :logger]
     ]
   end
 
-  defp deps do
+  def deps do
     [
-      {:fermo, "0.16.2"}  ,
-  {:datocms_graphql_client, "~> 0.15.4"},
-  {:fermo_datocms_graphql_client, "~> 0.14.3"},
-  {:fermo_helpers, "~> 0.12.0"}
-
+      {:esbuild, "~> 0.7.0"},
+      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
+      {:fermo, "0.16.7", path: "/home/joe/code/gh/joeyates/fermo", override: true},
+      {:datocms_graphql_client, path: "/home/joe/code/gh/joeyates/elixir_datocms_graphql_client", override: true},
+      {:fermo_datocms_graphql_client, path: "/home/joe/code/gh/joeyates/fermo_datocms_graphql_client"},
+      {:fermo_helpers, "~> 0.12.0"}
     ]
   end
 end

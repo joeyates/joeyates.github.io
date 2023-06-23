@@ -1,3 +1,3 @@
 // N.B.: ESBuild outputs a file called /build/assets/application-XXXX.css
-import '../stylesheets/styles.sass'
+// import '../stylesheets/styles.sass'
 require('./prism.js')
