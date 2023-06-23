@@ -13,6 +13,9 @@ module.exports = {
     extend: {
       colors: {
         olive: '#808000'
+      },
+      width: {
+        200: '50rem'
       }
     }
   },
