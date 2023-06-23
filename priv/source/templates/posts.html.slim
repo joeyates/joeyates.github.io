@@ -23,7 +23,7 @@ elixir:
 = Enum.map years, fn year ->
   - posts = posts_by_year[year]
   - by_date = posts |> CMS.by_creation_date() |> Enum.reverse()
-  h3 = year
+  h3.font-bold.mt-4.text-2xl = year
   ul
     = Enum.map by_date, fn post ->
       li
