@@ -10,6 +10,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        'light-olive': '#f0f0d0',
         olive: '#808000'
       },
       width: {
