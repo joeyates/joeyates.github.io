@@ -1,6 +1,6 @@
 defmodule JoeyatesBlog.Rendering.Table do
   def render(%{data: data}, _dast, _options) do
-    [~S(<table class="table">)] ++
+    [~S(<table class="border-2 border-[#202000]">)] ++
     headers(data) ++
     rows(data) ++
     ["</table>"]
@@ -19,9 +19,11 @@ defmodule JoeyatesBlog.Rendering.Table do
       cells =
         keys
         |> Enum.map(fn key ->
-          "<td>#{row[key]}</td>"
+          ~s(<td class="border-[#404020]>#{row[key]}</td>)
         end)
-      ["<tr>"] ++ cells ++ ["</tr>"]
+      [~S(<tr class="odd-[#f0f0d0] even-[#e0e0c0]">)] ++
+        cells ++
+        ["</tr>"]
     end)
   end
 end
