@@ -13,15 +13,14 @@ section.post
 
   = structured_text_to_html(page.body)
 
-.pagination
-  ul
-    li
-      = if params.previous do
-        a href="/posts/#{params.previous.slug}/" ="<"
-      - else
-        a ="<"
-    li
-      = if params.next do
-        a href="/posts/#{params.next.slug}/" =">"
-      - else
-        a =">"
+ul.flex.justify-center.text-2xl.list-none
+  li
+    = if params.previous do
+      a href="/posts/#{params.previous.slug}/" ="<"
+    - else
+      a ="<"
+  li
+    = if params.next do
+      a href="/posts/#{params.next.slug}/" =">"
+    - else
+      a =">"
