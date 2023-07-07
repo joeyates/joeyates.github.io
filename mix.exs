@@ -24,9 +24,9 @@ defmodule JoeyatesBlog.MixProject do
     [
       {:esbuild, "~> 0.7.0"},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
-      {:fermo, "0.16.7", path: "/home/joe/code/gh/joeyates/fermo", override: true},
-      {:datocms_graphql_client, path: "/home/joe/code/gh/joeyates/elixir_datocms_graphql_client", override: true},
-      {:fermo_datocms_graphql_client, path: "/home/joe/code/gh/joeyates/fermo_datocms_graphql_client"},
+      {:fermo, "0.17.0"},
+      {:datocms_graphql_client, "0.17.0"},
+      {:fermo_datocms_graphql_client, "0.17.0"},
       {:fermo_helpers, "~> 0.12.0"}
     ]
   end
