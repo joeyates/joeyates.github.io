@@ -9,7 +9,7 @@ config :datocms_graphql_client, :config,
 
 config :fermo, :base_url, System.fetch_env!("BASE_URL")
 
-config :fermo, :assets, [Assets.ESBuild, Fermo.Assets.Tailwind]
+config :fermo, :assets, [Fermo.Assets.ESBuild, Fermo.Assets.Tailwind]
 
 config :esbuild,
   version: "0.16.4",
