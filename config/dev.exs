@@ -17,20 +17,6 @@ Application.put_env(
   [{Registry, keys: :unique, name: :datocms_live_update_query_registry}]
 )
 
-Application.put_env(
-  :fermo,
-  :live_watchers, [
-    [
-      dir: "build",
-      wanted: ~r[(application\.js|app\.css)$],
-      call: [
-        {Fermo.Assets, :create_manifest, []},
-        {Fermo.Live.SocketRegistry, :reload, []}
-      ]
-    ]
-  ]
-)
-
 config = Application.get_env(:datocms_graphql_client, :config, [])
 merged = Keyword.merge(
   config,
