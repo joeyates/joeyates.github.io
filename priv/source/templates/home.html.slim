@@ -8,5 +8,5 @@ section
   - latest_posts = CMS.Post.latest(params.path, count: 15)
   ul
     = Enum.map latest_posts, fn post ->
-      li
+      li.pb-4
         a href="/posts/#{post.slug}/" = post.title
