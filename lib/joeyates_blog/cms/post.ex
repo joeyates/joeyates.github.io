@@ -72,7 +72,7 @@ defmodule JoeyatesBlog.CMS.Post do
       for_path,
       """
       query($first: IntType, $skip: IntType)  {
-        allPosts(orderBy: _createdAt_DESC, skip: $skip, first: $first) {
+        allPosts(orderBy: _createdAt_DESC, skip: $skip, first: $first, filter: {published: {eq: true}}) {
           id
           _createdAt
           slug
