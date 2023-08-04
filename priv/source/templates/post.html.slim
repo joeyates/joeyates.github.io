@@ -13,13 +13,13 @@ section
 
   = structured_text_to_html(page.body)
 
-ul.flex.justify-center.text-2xl.list-none
-  li
+ul.mt-8.flex.justify-center.text-2xl.list-none
+  li.mr-4
     = if params.previous do
       a href="/posts/#{params.previous.slug}/" ="<"
     - else
       a ="<"
-  li
+  li.ml-4
     = if params.next do
       a href="/posts/#{params.next.slug}/" =">"
     - else
