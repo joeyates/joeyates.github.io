@@ -5,7 +5,8 @@ const plugin = require('tailwindcss/plugin')
 
 module.exports = {
   content: [
-    './priv/source/**/*.html.slim'
+    './priv/source/**/*.html.slim',
+    './lib/joeyates_blog/**/*.ex'
   ],
   theme: {
     extend: {
