@@ -1,2 +1,10 @@
+# Block Common Crawl Bot
 User-agent: CCBot
 Disallow: /
+
+# Block OpenAI's bot
+User-agent: GPTBot
+Disallow: /
+
+User-agent: *
+Allow: /
