@@ -3,8 +3,8 @@ defmodule JoeyatesBlog.Rendering.ImageWithCaption do
     [
       ~s(
         <div class="w-full my-4 flex flex-col justify-center">
-          <img src="#{block.image.url}?w=600"/>
-          <p class="flex justify-center text-sm">#{block.caption}</p>
+          <img class="mb-0" src="#{block.image.url}?w=600"/>
+          <p class="mt-1 flex justify-center text-sm">#{block.caption}</p>
         </div>
       )
     ]
