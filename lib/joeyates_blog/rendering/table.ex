@@ -19,7 +19,7 @@ defmodule JoeyatesBlog.Rendering.Table do
       cells =
         keys
         |> Enum.map(fn key ->
-          ~s(<td class="border-[#404020]>#{row[key]}</td>)
+          ~s(<td class="border-[#404020] px-1">#{row[key]}</td>)
         end)
       [~S(<tr class="odd-[#f0f0d0] even-[#e0e0c0]">)] ++
         cells ++
