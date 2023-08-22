@@ -6,7 +6,7 @@ defmodule JoeyatesBlog.CMS.Post do
   alias JoeyatesBlog.CMS
 
   @enforce_keys ~w(id created_at title)a
-  defstruct ~w(id created_at slug old_path title description body categories)a
+  defstruct ~w(id created_at slug published_on old_path title description body categories)a
 
   @per_page 20
 
@@ -34,6 +34,7 @@ defmodule JoeyatesBlog.CMS.Post do
           _createdAt
           title
           description
+          publishedOn
           body {
             blocks {
               __typename
@@ -99,12 +100,18 @@ defmodule JoeyatesBlog.CMS.Post do
 
   def new(data) when is_map(data) do
     {:ok, created_at, _} = DateTime.from_iso8601(data._createdAt)
+    published_on = to_date(data[:publishedOn])
     data =
       data
       |> Map.put(:_createdAt, created_at)
+      |> Map.put(:publishedOn, published_on)
       |> snakify_keys()
 
     struct!(__MODULE__, data)
+  end
+
+  def date(%__MODULE__{} = post) do
+    post.published_on || post.created_at
   end
 
   defp snakify_keys(data) when is_map(data) do
@@ -123,4 +130,8 @@ defmodule JoeyatesBlog.CMS.Post do
     end)
     |> Enum.into(%{})
   end
+
+  defp to_date(nil), do: nil
+
+  defp to_date(text), do: Date.from_iso8601!(text)
 end

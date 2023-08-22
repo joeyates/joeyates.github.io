@@ -6,7 +6,7 @@
   = page.description
 
 - page = CMS.Post.get!(params.id)
-- date = date_to_s(page.created_at)
+- date = date_to_s(CMS.Post.date(page))
 section.space-y-4.prose
   .flex.justify-end.mb-1
     div = date
