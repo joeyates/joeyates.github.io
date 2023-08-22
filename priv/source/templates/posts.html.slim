@@ -28,7 +28,7 @@ elixir:
   h3.font-bold.mt-4.text-2xl = year
   ul
     = Enum.map by_date, fn post ->
-      li
+      li class="mt-4"
         a href="/posts/#{post.slug}/" = post.title
 
 ul.flex.justify-center.text-2xl.list-none
