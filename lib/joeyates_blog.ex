@@ -46,7 +46,7 @@ defmodule JoeyatesBlog do
   end
 
   defp add_posts(config) do
-    post_count = CMS.Post.count()
+    post_count = CMS.Post.count(published: Mix.env() != :dev)
     index_page_count = Kernel.div(post_count - 1, CMS.Post.per_page()) + 1
 
     Enum.reduce(
@@ -67,7 +67,7 @@ defmodule JoeyatesBlog do
           }
         )
 
-        posts = CMS.Post.page(nil, page: i)
+        posts = CMS.Post.page(nil, page: i, published: Mix.env() != :dev)
         posts
         |> Enum.with_index()
         |> Enum.reduce(

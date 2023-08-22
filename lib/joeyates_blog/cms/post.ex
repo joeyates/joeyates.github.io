@@ -12,13 +12,16 @@ defmodule JoeyatesBlog.CMS.Post do
 
   def per_page, do: @per_page
 
-  def count() do
+  def count(opts \\ []) do
+    only_published = Keyword.get(opts, :published, true)
+    published_filter = if only_published, do: %{published: %{eq: true}}, else: %{}
     result = GraphQLClient.query!(
       """
-      query {
-        _allPostsMeta { count }
+      query($publishedFilter: PostModelFilter)  {
+        _allPostsMeta(filter: $publishedFilter) { count }
       }
-      """
+      """,
+      %{publishedFilter: published_filter}
     )
 
     result._allPostsMeta.count
@@ -67,13 +70,15 @@ defmodule JoeyatesBlog.CMS.Post do
 
   def page(for_path, opts \\ []) do
     per_page = Keyword.get(opts, :per_page, @per_page)
+    only_published = Keyword.get(opts, :published, true)
     page = Keyword.get(opts, :page, 1)
     skip = (page - 1) * per_page
+    published_filter = if only_published, do: %{published: %{eq: true}}, else: %{}
     result = GraphQLClient.query_for_path!(
       for_path,
       """
-      query($first: IntType, $skip: IntType)  {
-        allPosts(orderBy: _createdAt_DESC, skip: $skip, first: $first, filter: {published: {eq: true}}) {
+      query($first: IntType, $skip: IntType, $publishedFilter: PostModelFilter)  {
+        allPosts(orderBy: _createdAt_DESC, skip: $skip, first: $first, filter: $publishedFilter) {
           id
           _createdAt
           slug
@@ -82,7 +87,7 @@ defmodule JoeyatesBlog.CMS.Post do
         }
       }
       """,
-      %{skip: skip, first: per_page}
+      %{skip: skip, first: per_page, publishedFilter: published_filter}
     )
 
     result.allPosts
@@ -92,7 +97,7 @@ defmodule JoeyatesBlog.CMS.Post do
   def latest(for_page, opts \\ []) do
     count = Keyword.get(opts, :count, 10)
 
-    page(for_page)
+    page(for_page, opts)
     |> CMS.by_creation_date()
     |> Enum.reverse()
     |> Enum.take(count)

@@ -1,7 +1,8 @@
 - content_for(:title)
   elixir:
+    is_dev = context.env["MIX_ENV"] in [nil, :dev]
     posts =
-      CMS.Post.page(params.path, page: params.page)
+      CMS.Post.page(params.path, page: params.page, published: !is_dev)
       |> CMS.by_creation_date()
     first_year = hd(posts).created_at.year
     last_year = Enum.at(posts, -1).created_at.year
@@ -15,8 +16,9 @@
   List of blog posts
 
 elixir:
+  is_dev = context.env["MIX_ENV"] in [nil, :dev]
   posts_by_year =
-    CMS.Post.page(params.path, page: params.page)
+    CMS.Post.page(params.path, page: params.page, published: !is_dev)
     |> Enum.group_by(&(&1.created_at.year))
   years = Map.keys(posts_by_year) |> Enum.sort() |> Enum.reverse()
 

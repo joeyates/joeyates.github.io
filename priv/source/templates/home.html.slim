@@ -4,8 +4,10 @@
 - content_for(:description)
   = "Musings about programming, mostly"
 
+- is_dev = context.env["MIX_ENV"] in [nil, :dev]
+
 section
-  - latest_posts = CMS.Post.latest(params.path, count: 15)
+  - latest_posts = CMS.Post.latest(params.path, count: 15, published: !is_dev)
   ul
     = Enum.map latest_posts, fn post ->
       li.pb-4
