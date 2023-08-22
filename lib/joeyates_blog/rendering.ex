@@ -45,7 +45,7 @@ defmodule JoeyatesBlog.Rendering do
   end
 
   def render_code(%{type: "code", language: language} = node, _dast, _options) do
-    ~s(<pre class="min-w-min"><code class="language-#{language}">#{node.code}</code></pre>)
+    ~s(<pre><code class="language-#{language}">#{node.code}</code></pre>)
   end
 
   def render_code(%{type: "code"} = node, _dast, _options) do
