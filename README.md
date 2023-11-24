@@ -4,7 +4,6 @@
 
 ```sh
 $ mix deps.get
-$ yarn # ...or npm install
 ```
 
 # Development
@@ -18,5 +17,5 @@ The site is available at `http://localhost:4001`
 # Build
 
 ```sh
-$ bin/build
+$ bin/publish
 ```
