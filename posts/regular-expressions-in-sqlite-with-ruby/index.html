@@ -1,0 +1,62 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>
+Regular Expressions in SQLite with Ruby</title>
+<meta content="
+When using SQLite via Ruby, you can use implement functions in Ruby and call them from SQL" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/assets/app-0fbd9c0131bf82008867b19d09430267.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-f064f34aa9721a0a7efd222bae17a4e3.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive md:min-h-screen flex justify-center">
+<div class="max-w-full md:w-[40rem] bg-light-olive pt-4 px-10 pb-8">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-4">
+<a href="/posts/">Archives</a></li></ul></nav>
+<h1 class="leading-loose pt-2 pb-4 text-center text-2xl">
+
+Regular Expressions in SQLite with Ruby</h1></header>
+
+<main class="max-w-full mx-1">
+
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-1">
+<div>2010/01/31</div>
+</div>
+<p>Recently, I was writing an autocomplete method in a Ruby on Rails application. I wanted to find whole word matches, and words starting with the entered text.</p><p>The regex I wanted to use was like this:</p><pre><code class="language-ruby">word =~ /\W#{query}/</code></pre><p>So, if the user entered *'and'*, I wanted to retrieve <code><strong>'And</strong></code><code>es</code>' and '<code>Bill </code><code><strong>and</strong></code><code> Ben</code>', but not '<code>c</code><code><strong>and</strong></code><code>le</code>'.</p><p>In development I was using an SQLite database, and SQLite does not yet implement a regular expression operator. Actually, it <em>defines</em> the `REGEX` operator, but it doesn't implement it - if you use it you get an error.</p><p>I tried writing the method with just the <code>LIKE</code> operator, but it was getting very long-winded: you have to jump through hoops to approximate the regex <code>\W</code> operator.</p><p>The <code>REGEXP</code> operator is just syntactic sugar for the (unimplemented) <a href="http://www.sqlite.org/lang_expr.html#regexp" target="_blank">regexp() function</a>. SQLite allows you to add external functions at runtime, so I realized that there must be a way around the limitation, but, initially I thought I had to implement regexp() as a C function.</p><p>I found <a href="http://stephen-veit.blogspot.com/2009/03/implementing-regexp-in-sqlite3.html" target="_blank">an article about implementing regexp() in Ruby</a>. It needed a bit of tweaking as in the Rails 2.3.x interface for SQLite <code>ActiveRecord::ConnectionAdapters::SQLite3Adapter.initialize()</code> takes 3 parameters, not 2.</p><p>I got `REGEXP` working by creating an initializer:</p><pre><code class="language-ruby">require 'active_record/connection_adapters/sqlite3_adapter'
+
+class ActiveRecord::ConnectionAdapters::SQLite3Adapter
+  def initialize(db, logger, config)
+    super
+
+    db.create_function('regexp', 2) do |func, pattern, expression|
+       regexp = Regexp.new(pattern.to_s, Regexp::IGNORECASE)
+       if expression.to_s.match(regexp)
+         func.result = 1
+       else
+         func.result = 0
+       end
+     end
+  end
+end</code></pre><p>The proof of the pudding:</p><pre><code class="language-shell">./script/console
+>> Noun.find(:all, :conditions => ['name LIKE ?', '%and%']).collect(&:name)
+=> ["Candle", "Bill and Ben", "Andes"]
+>> Noun.find(:all, :conditions => ['name REGEXP ?', '\Wand']).collect(&:name)
+=> ["Bill and Ben", "Andes"]</code></pre><p></p>
+</section>
+<ul class="mt-8 flex justify-center text-2xl list-none">
+<li class="mr-4">
+
+<a href="/posts/managing-multiple-gnu-screen-sessions/"><</a></li>
+<li class="ml-4">
+
+<a href="/posts/callbacks-in-objective-c/">></a></li></ul>
+</main></div></body></html>

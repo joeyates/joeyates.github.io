@@ -1,0 +1,53 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>
+Use 'g' as an Alias for 'git' without Losing Autocompletion</title>
+<meta content="
+How to set up the alias and autocomplete" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/assets/app-0fbd9c0131bf82008867b19d09430267.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-f064f34aa9721a0a7efd222bae17a4e3.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive md:min-h-screen flex justify-center">
+<div class="max-w-full md:w-[40rem] bg-light-olive pt-4 px-10 pb-8">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-4">
+<a href="/posts/">Archives</a></li></ul></nav>
+<h1 class="leading-loose pt-2 pb-4 text-center text-2xl">
+
+Use 'g' as an Alias for 'git' without Losing Autocompletion</h1></header>
+
+<main class="max-w-full mx-1">
+
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-1">
+<div>2010/08/29</div>
+</div>
+<p>I've just started using a new kind of abbreviation system for Git:</p><ul><li><p>I use 'g' instead of 'git',</p></li><li><p>I've set up bash autocompletion for 'g', just like 'git'.</p></li></ul><p>Previously, I used the following in my ~/.bashrc:</p><pre><code class="language-bash">...
+alias gts='git status'
+alias gtd='git diff'
+...</code></pre><p>The problem is that, by doing this, you lose autocompletion.</p><h1>Setup</h1><h2>1. Set Up 'g' as an alias for 'git'</h2><p>In ~/.bashrc:</p><pre><code class="language-shell">...
+alias g='git'
+...</code></pre><h2>2. Locate the Bash Completion File for Git</h2><p>Locate your bash_completion.d directory:</p><ul><li><p>On Linux, /etc/bash_completion.d,</p></li><li><p>I'm using OS X with Mac Ports, so mine is at /opt/local/etc/bash_completion.d.</p></li></ul><p>Ensure the directory contains <code>git-completion.bash</code></p><h2>3. Add Completion for 'g'</h2><p>Add the following to the end of <code>git-completion.bash</code>:</p><pre><code class="language-shell">complete -o bashdefault -o default -o nospace -F _git g 2>/dev/null \
+        || complete -o default -o nospace -F _git g</code></pre><p>Now, if you type:</p><pre><code class="language-shell">$ g |<TAB></code></pre><p>you should see autocompletion:</p><pre><code class="language-shell">$ g |
+add                 commit              init                request-pull 
+am                  config              instaweb            reset 
+annotate            describe            log                 revert
+...</code></pre><p></p>
+</section>
+<ul class="mt-8 flex justify-center text-2xl list-none">
+<li class="mr-4">
+
+<a href="/posts/hello-gosu/"><</a></li>
+<li class="ml-4">
+
+<a href="/posts/rake-builder/">></a></li></ul>
+</main></div></body></html>

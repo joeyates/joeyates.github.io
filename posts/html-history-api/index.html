@@ -1,0 +1,56 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>
+HTML History API</title>
+<meta content="
+A quick look at the new API for handling browser state" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/assets/app-0fbd9c0131bf82008867b19d09430267.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-f064f34aa9721a0a7efd222bae17a4e3.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive md:min-h-screen flex justify-center">
+<div class="max-w-full md:w-[40rem] bg-light-olive pt-4 px-10 pb-8">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-4">
+<a href="/posts/">Archives</a></li></ul></nav>
+<h1 class="leading-loose pt-2 pb-4 text-center text-2xl">
+
+HTML History API</h1></header>
+
+<main class="max-w-full mx-1">
+
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-1">
+<div>2011/07/18</div>
+</div>
+
+        <div class="w-full my-4 flex flex-col justify-center">
+          <img class="mb-0 self-center" src="https://www.datocms-assets.com/92603/1674208188-html5-history-api.png?w=600"/>
+          <p class="mt-1 flex justify-center text-sm">The Example App</p>
+        </div>
+      <p>The HTML5 history API allows AJAX-based sites to avoid "breaking the back button". Every time you update the page, you store the new content is the window.history object. When the user presses the back button, you retrieve the current item from window.history and update the page with it.</p><p>What follows is an "all-in-one page" Sinatra/jQuery program. You can find the code <a href="https://gist.github.com/1090336" target="_blank">here</a>.</p><p>Run it like this:</p><pre><code class="language-shell">$ ruby history_api.rb</code></pre><p>The program allows you to browse back and forwards through numbered pages.</p><p>When the first page is shown, the initial content of the container is stored in the history object:</p><pre><code class="language-javascript">history.replaceState($('#container').html(), '', location.href);</code></pre><p>As you select links, only the content of the 'container' DIV gets updated. An AJAX call is made to get the content, which is stored in the history object:</p><pre><code class="language-javascript">var anchor = this;
+
+ $.get(this.href, function(data) {
+   history.pushState(data, '', anchor.href);
+   $('#container').html(data);
+   updateLinks( anchor.getAttribute('data-number'));
+ });</code></pre><p>Each time the back button is pressed, the content is retrieved and placed in the container:</p><pre><code class="language-javascript">onpopstate = function(event) {
+  $('#container').html(event.state);
+};</code></pre><p>Notice that pressing the forward and back buttons updates the page correctly without needing to call the server.</p>
+</section>
+<ul class="mt-8 flex justify-center text-2xl list-none">
+<li class="mr-4">
+
+<a href="/posts/ruby-bareword-assignment-and-method-calls-with-implicit-self/"><</a></li>
+<li class="ml-4">
+
+<a href="/posts/overriding-the-insertion-operator-for-c-template-classes/">></a></li></ul>
+</main></div></body></html>

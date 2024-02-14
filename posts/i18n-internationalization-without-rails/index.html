@@ -1,0 +1,66 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>
+i18n Internationalization without Rails</title>
+<meta content="
+How to use the i18n gem in a non-Rails Ruby project" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/assets/app-0fbd9c0131bf82008867b19d09430267.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-f064f34aa9721a0a7efd222bae17a4e3.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive md:min-h-screen flex justify-center">
+<div class="max-w-full md:w-[40rem] bg-light-olive pt-4 px-10 pb-8">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-4">
+<a href="/posts/">Archives</a></li></ul></nav>
+<h1 class="leading-loose pt-2 pb-4 text-center text-2xl">
+
+i18n Internationalization without Rails</h1></header>
+
+<main class="max-w-full mx-1">
+
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-1">
+<div>2010/03/04</div>
+</div>
+<p>I searched the Internet in vain for examples of using the Ruby <a href="http://rubygems.org/gems/i18n" target="_blank">i18n gem</a> outside of Rails apps.</p><p>Below is a minimal example: the aim is (as usual) to produce a greeting - this time in English and Italian.</p><h1>Installation</h1><pre><code class="language-ruby">$ irb
+>> require 'rubygems'
+=> true
+>> require 'sun_times'
+=> true
+>> SunTimes.set( Date.today, 44, 11 ).localtime
+=> Tue Mar 09 18:14:08 +0100 2010</code></pre><h1>The <code>t</code> method</h1><p>The most common use of i18n is via <code>I18n.translate</code> which has an abbreviated alias <code>I18n.t</code>.</p><h1>Translations</h1><p>en.yml:</p><pre><code class="language-yaml">en:
+  hello world: Hello World!</code></pre><p>it.yml:</p><pre><code class="language-yaml">it:
+  hello world: Ciao Mondo!</code></pre><p>These translations can be accessed as follows:</p><pre><code class="language-ruby">I18n.t('hello world')</code></pre><p>That will use the current locale setting. You can change it as follows:</p><pre><code class="language-ruby">I18n.locale = :it</code></pre><h1>The Program</h1><p>After loading the <code>i18n</code> gem, set up <code>I18n.load_path</code> before attempting to retrieve any translations.</p><pre><code class="language-ruby">require 'rubygems' if RUBY_VERSION < '1.9'
+require 'i18n'
+
+I18n.load_path = ['en.yml', 'it.yml']
+
+puts 'In English...'
+I18n.locale = :en
+puts I18n.t('hello world')
+
+puts 'In Italian...'
+I18n.locale = :it
+puts I18n.t('hello world')</code></pre><p>The result:</p><pre><code class="language-shell">$ ruby salutation.rb
+In English...
+Hello World!
+In Italian...
+Ciao Mondo!</code></pre><p></p>
+</section>
+<ul class="mt-8 flex justify-center text-2xl list-none">
+<li class="mr-4">
+
+<a href="/posts/a-sunrise-and-sunset-time-calculator/"><</a></li>
+<li class="ml-4">
+
+<a href="/posts/setting-up-postgis/">></a></li></ul>
+</main></div></body></html>

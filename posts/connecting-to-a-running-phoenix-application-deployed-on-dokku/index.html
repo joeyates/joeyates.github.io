@@ -1,0 +1,94 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>
+Connecting to a Running Phoenix Application Deployed on Dokku</title>
+<meta content="
+How to set launch the Phoenix process so that shell process can be connected to it when necessary" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/assets/app-0fbd9c0131bf82008867b19d09430267.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-f064f34aa9721a0a7efd222bae17a4e3.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive md:min-h-screen flex justify-center">
+<div class="max-w-full md:w-[40rem] bg-light-olive pt-4 px-10 pb-8">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-4">
+<a href="/posts/">Archives</a></li></ul></nav>
+<h1 class="leading-loose pt-2 pb-4 text-center text-2xl">
+
+Connecting to a Running Phoenix Application Deployed on Dokku</h1></header>
+
+<main class="max-w-full mx-1">
+
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-1">
+<div>2023/08/22</div>
+</div>
+<p>I deploy my Elixir Phoenix applications to a personal VPS managed via Dokku.</p><p>Recently, I needed to run a script to populate the production database with geographical data. The best practise in Phoenix is to not put data in migrations, so I set up a seed data file (called <code>priv/repo/seeds.exs</code>):</p><pre><code class="language-elixir">require Logger
+
+alias MyApp.Geo
+
+Logger.info "Upserting areas..."
+
+nord_ovest = Geo.get_or_create_area(%{name: "Nord-ovest"})
+...</code></pre><p>In development, this file can be run via mix:</p><pre><code class="language-shell">$ mix run priv/repo/seeds.exs
+[info] Upserting areas...</code></pre><p>You can also run Elixir scripts from within <code>iex</code>:</p><pre><code class="language-shell">$ iex -S mix
+c "priv/repo/seeds.exs"
+[info] Upserting areas...</code></pre><p>You can't just run <code>mix</code> or <code>iex -S mix</code> in production, for one of two reasons, which I'll explain below.</p><h1>dokku enter - Part 1</h1><p>Dokku has the <code>dokku enter</code> command, but as (at least in my setup) it doesn't echo commands, I have tended to avoid it.</p><h1>Running Mix in a Dokku Docker Container</h1><p>So, I tried accessing in the container and running <code>mix</code> from there:</p><pre><code class="language-shell">$ docker exec -ti my_app.web.1 bash
+$ cd app
+$ mix run priv/repo/seeds.exs
+bash: mix: command not found</code></pre><p>Unfortunately, <code>mix</code> was not in the PATH.</p><p>Dokku sets this stuff up via scripts under <code>/app/.profile.d/</code> which need to be <code>source</code>d.</p><p>So the magic invocation to use is</p><pre><code class="language-shell">$ . <(cat /app/.profile.d/*)</code></pre><h1>Mix Won't Run</h1><p>When I tried to run it exactly as above, Mix tried to start the application before running the script, and startup failed as the Cowboy server was already running on the designated port:</p><pre><code class="language-shell">$ docker exec -ti my_app.web.1 bash
+$ cd /app
+$ . <(cat /app/.profile.d/*)
+$ mix run priv/repo/seeds.exs
+06:34:49.673 [error] Failed to start Ranch listener MyAppWeb.Endpoint.HTTP in :ranch_tcp:listen([cacerts: :..., key: :..., cert: :..., ip: {0, 0, 0, 0, 0, 0, 0, 0}, port: 5000]) for reason :eaddrinuse (address already in use)</code></pre><p>If, on the other hand, I passed the <code>--no-start</code> parameter, it failed as the process I was starting wasn't starting a database connection:</p><pre><code class="language-shell">$ mix run --no-start priv/repo/seeds.exs
+
+06:37:51.168 [info] Upserting areas...
+** (RuntimeError) could not lookup Ecto repo MyApp.Repo because it was not started or it does not exist
+    (ecto 3.10.3) lib/ecto/repo/registry.ex:22: Ecto.Repo.Registry.lookup/1
+    (ecto 3.10.3) lib/ecto/repo/supervisor.ex:160: Ecto.Repo.Supervisor.tuplet/2
+    (my_app 0.1.0) lib/colla/repo.ex:2: MyApp.Repo.get_by/3
+    (my_app 0.1.0) lib/colla/geo.ex:30: MyApp.Geo.get_or_create_area/1
+    priv/repo/seeds.exs:7: (file)</code></pre><h1>Distributed Elixir</h1><p>So, what I needed to do was connect to the <strong>existing</strong> Phoenix process. That way <code>mix</code> wouldn't try to connect to the webserver port and would have the database connection available.</p><p>I changed my <code>Procfile</code> to add the <a href="https://www.erlang.org/doc/getting_started/conc_prog.html#registered-process-names" target="_blank">sname ("short name")</a> <code>my_app</code> for the node.</p><pre><code>web: elixir --sname my_app -S mix phx.server</code></pre><p>But, that didn't work:</p><pre><code class="language-shell">$ iex --sname console --remsh my_app
+                                                              
+Erlang/OTP 25 [erts-13.0.4] [source] [64-bit] [smp:4:4] [ds:4:4:10] [async-threads:1] [jit:ns]
+
+Could not contact remote node my_app@13a522884ed8, reason: :nodedown. Aborting...</code></pre><p>Actually,  that <code>:nodedown</code> is not quite true, as I could see from the application logs:</p><pre><code class="language-shell">$ dokku logs $DOKKU_APP
+2023-08-22T07:43:17.082683150Z app[web.1]: 07:43:17.075 [error] ** Connection attempt from node :console@13a522884ed8 rejected. Invalid challenge reply. **</code></pre><p>The remote node was actually receiving the request for connection but is refusing it.</p><h1>Wrong Cookie</h1><p>The problem turned out to be the <a href="https://www.erlang.org/doc/reference_manual/distributed.html#security" target="_blank">magic cookie</a>.</p><p>The Phoenix process is run as <code>herokuishuser</code>:</p><pre><code class="language-shell">$ ps afux
+root         243  0.0  0.0   4248  3464 pts/0    Ss   06:54   0:00 bash
+root         256  0.0  0.0   4524  2976 pts/0    S    06:54   0:00  \_ su - herokuishuser</code></pre><p>When the Phoenix application starts, as it has a node name, Erlang generates a file <code>.erlang.cookie</code> in <code>/app</code>, which is <code>herokuishuser</code>'s home directory:</p><pre><code class="language-shell">$ cat /app/.erlang.cookie
+ZHGOXPNPCCICDESCLHCD</code></pre><p>I was <code>exec</code>ing into the Docker container as <strong>root</strong>.</p><p>If I ran <code>iex</code> with a node name, a new cookie was generated for root, which didn't match the one for <code>herokuishuser</code>:</p><pre><code class="language-shell">$ iex --sname ciao</code></pre><pre><code class="language-shell">$ cat /root/.erlang.cookie 
+PANTWFLLYXARWYBRTNUU</code></pre><p>So, when I tried to run a remote shell, the correction was refused.</p><h1>herokuishuser</h1><p>So, all I needed to do was to invoke Docker with the correct user</p><pre><code class="language-shell">$ docker exec -u herokuishuser -ti my_app.web.1 bash
+$ cd /app
+$ . <(cat /app/.profile.d/*)
+$ iex --sname console --remsh my_app
+Erlang/OTP 25 [erts-13.0.4] [source] [64-bit] [smp:4:4] [ds:4:4:10] [async-threads:1] [jit:ns]
+
+Interactive Elixir (1.14.1) - press Ctrl+C to exit (type h() ENTER for help)
+iex(my_app@35fb427c9010)1> </code></pre><p>And I finally got a working remote shell in the Phoenix process.</p><p>From there, I could run my seed script:</p><pre><code>c "priv/repo/seeds.exs"
+[info] Upserting areas...
+...</code></pre><h1>Back to <code>dokku enter</code></h1><p>Armed with my understanding of what was going on, I can now run <code>dokku enter</code> and have remote <code>iex</code> access to the Phoenix process from my development machine:</p><pre><code class="language-shell">$ dokku enter $DOKKU_APP
+$ iex --sname console --remsh my_app
+Erlang/OTP 25 [erts-13.0.4] [source] [64-bit] [smp:4:4] [ds:4:4:10] [async-threads:1] [jit:ns]
+
+Interactive Elixir (1.14.1) - press Ctrl+C to exit (type h() ENTER for help)
+c "priv/repo/seeds.exs"
+
+08:53:26.853 [info] Upserting areas...
+...</code></pre><p>No messing about with setting up the user or PATH.</p><p>So, in summary, the solution when using Dokku is:</p><ol><li><p>Give the application a node name in Procfile,</p></li><li><p>Use <code>dokku enter</code>,</p></li><li><p>Invoke <code>iex --remsh</code> with that node name.</p></li></ol><p>If you're not using Dokku, and are using containers, the trick is to invoke <code>iex</code> as the same user that started the application.</p>
+</section>
+<ul class="mt-8 flex justify-center text-2xl list-none">
+<li class="mr-4">
+
+<a href="/posts/back-up-gmail-accounts-with-imap-backup-using-email-oauth2-proxy/"><</a></li>
+<li class="ml-4">
+
+<a href="/posts/achieving-a-30x-improvement-in-imap-backup-times/">></a></li></ul>
+</main></div></body></html>

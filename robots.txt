@@ -1,0 +1,17 @@
+# OpenAI’s web crawler: GPT3.5, GPT4, ChatGPT
+User-agent: GPTBot
+
+# ChatGPT plugins
+User-agent: ChatGPT-User
+
+# Google's web crawler: Bard, VertexAI, Gemini
+User-agent: Google-Extended
+
+# Claude
+User-agent: anthropic-ai
+
+# Common Crawl
+User-agent: CCBot
+
+# Censorship area
+Disallow: /
