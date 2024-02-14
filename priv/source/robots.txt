@@ -1,10 +1,17 @@
-# Block Common Crawl Bot
-User-agent: CCBot
-Disallow: /
-
-# Block OpenAI's bot
+# OpenAI’s web crawler: GPT3.5, GPT4, ChatGPT
 User-agent: GPTBot
-Disallow: /
 
-User-agent: *
-Allow: /
+# ChatGPT plugins
+User-agent: ChatGPT-User
+
+# Google's web crawler: Bard, VertexAI, Gemini
+User-agent: Google-Extended
+
+# Claude
+User-agent: anthropic-ai
+
+# Common Crawl
+User-agent: CCBot
+
+# Censorship area
+Disallow: /
