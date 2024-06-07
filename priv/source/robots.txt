@@ -4,9 +4,6 @@ User-agent: GPTBot
 # ChatGPT plugins
 User-agent: ChatGPT-User
 
-# Google's web crawler: Bard, VertexAI, Gemini
-User-agent: Google-Extended
-
 # Claude
 User-agent: anthropic-ai
 
