@@ -1,14 +1,16 @@
 # OpenAI’s web crawler: GPT3.5, GPT4, ChatGPT
-User-agent: GPTBot
+user-agent: GPTBot
 
 # ChatGPT plugins
-User-agent: ChatGPT-User
+user-agent: ChatGPT-User
 
 # Claude
-User-agent: anthropic-ai
+user-agent: anthropic-ai
 
 # Common Crawl
-User-agent: CCBot
+user-agent: CCBot
 
 # Censorship area
-Disallow: /
+disallow: /
+
+sitemap: https://joeyates.info/sitemap.xml
