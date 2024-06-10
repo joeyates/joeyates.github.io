@@ -1,0 +1,46 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>
+Editing Javascript in Emacs</title>
+<meta content="
+How to set up js2-mode" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-0fbd9c0131bf82008867b19d09430267.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-f064f34aa9721a0a7efd222bae17a4e3.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive md:min-h-screen flex justify-center">
+<div class="max-w-full md:w-[40rem] bg-light-olive pt-4 px-10 pb-8">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-4">
+<a href="/posts/">Archives</a></li></ul></nav>
+<h1 class="leading-loose pt-2 pb-4 text-center text-2xl">
+
+Editing Javascript in Emacs</h1></header>
+
+<main class="max-w-full mx-1">
+
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-1">
+<div>2010/04/02</div>
+</div>
+<p>Steve Yegge of Google has created a new Javascript mode 'js2-mode' for Emacs.</p><p>It works very well as it uses true parsing, not heuristics, to analyse code.</p><h1>Installation</h1><ul><li><p>Download http://js2-mode.googlecode.com/files/js2-20090723b.el,</p></li><li><p>Rename the file as js2-mode.el,</p></li><li><p>Move it to a directory in your <a href="http://www.gnu.org/software/emacs/emacs-faq.html#Changing-load_002dpath">'load-path'</a> (~/.emacs.d/ should work),</p></li><li><p>To compile, start Emacs and run the following command:</p></li></ul><pre><code>M-x byte-compile-file
+js2-mode.el</code></pre><h1>Use</h1><p>Add the following to your .emacs file:</p><pre><code class="language-lisp">(require 'js2-mode)
+  (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))</code></pre><p>This associates all Javascript files with JS2 mode.</p><p>Some features of the mode are:</p><ul><li><p>Highlighting of syntax errors and doubtful structures, e.g. missing ';', and undeclared variables,</p></li><li><p>The auto-indentation system works.</p></li></ul><p>I often make Javascript files dynamic in Rails projects, and the only feature I would wish for is for handling of Ruby ERB tags - currently they completely confuse the parser.</p>
+</section>
+<ul class="mt-8 flex justify-center text-2xl list-none">
+<li class="mr-4">
+
+<a href="/posts/a-rails-programmer-s-first-django-application/"><</a></li>
+<li class="ml-4">
+
+<a href="/posts/show-your-git-branch-name-in-your-gnu-screen-status-line/">></a></li></ul>
+</main></div></body></html>

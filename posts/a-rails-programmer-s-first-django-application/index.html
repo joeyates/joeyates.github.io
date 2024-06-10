@@ -1,0 +1,49 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>
+A Rails Programmer's First Django Application</title>
+<meta content="
+As a Rails programmer, what's it like to try out Django?" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-0fbd9c0131bf82008867b19d09430267.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-f064f34aa9721a0a7efd222bae17a4e3.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive md:min-h-screen flex justify-center">
+<div class="max-w-full md:w-[40rem] bg-light-olive pt-4 px-10 pb-8">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-4">
+<a href="/posts/">Archives</a></li></ul></nav>
+<h1 class="leading-loose pt-2 pb-4 text-center text-2xl">
+
+A Rails Programmer's First Django Application</h1></header>
+
+<main class="max-w-full mx-1">
+
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-1">
+<div>2010/04/04</div>
+</div>
+<p>I've seen many comparisons of Rails with Django, its Python counterpart.</p><h1>The Application</h1><p>I decided to use Django to write <a href="http://titusd.co.uk/snape/timeline/" target="_blank">a local history application: the story of Snape in East Sussex</a>.</p>
+        <div class="w-full my-4 flex flex-col justify-center">
+          <img class="mb-0 self-center" src="https://www.datocms-assets.com/92603/1674208225-snape-timeline.png?w=600"/>
+          <p class="mt-1 flex justify-center text-sm">The public timeline</p>
+        </div>
+      <p>The front and of the application uses a <a href="http://code.google.com/p/simile-widgets/wiki/Timeline" target="_blank">SIMILE timeline</a> to display dates.</p><h1>First Impressions about Django</h1><h2>Apps</h2><p>The main thing I was looking forward to while writing the app was modularity. In fact, in the and I made two apps: the specific Snape application and a generic timeline app.</p><h2>Creating the Database</h2><p>In Rails, you launch script/generate Model and you obtain a database and a series of migrations, which form a chronology of development of the database.</p><p>In Django, you describe the database fields in your <code>model.py</code> file and the run <code>manage.py syncdb</code>.</p><p>The advantage of the Django system is that the model holds authoritative information about the fields in the database.</p><p>The great disadvantage is that there are no <code>TABLE ALTER</code>ing migrations - you have to dump the table creation SQL and manually construct and run <code>TABLE ALTER</code> commands.</p><h2>Settings</h2><p>Django's settings file (<code>settings.py</code>) more or less has to be site specific. So that means you have to decide what to check in to your version control system. Some people seem to use a <code>settings.py.default</code> which they then copy to <code>settings.py</code> and alter to the needs of a specific machine.</p><p>I chose to keep site specific stuff in a set of JSON files, named after the local machine (see <a href="http://gnuvince.wordpress.com/2007/03/15/local-settings-in-django/" target="_blank">http://gnuvince.wordpress.com/2007/03/15/local-settings-in-django/</a>). It woks quite well, but in Rails as I commonly have a single development machine and a single production one, I am able to avoid the whole problem thanks to <code>config/environments/[development|production].rb</code>.</p><h2>Static Content</h2><p>There is a difference between how one handles static files in development and production. Most people seem to use a hack in the <code>urls.py</code> file, indicating where to get static content if in DEBUG mode, whereas in production mode you are supposed to set up Apache aliases for the various directories.</p><p>The logic here is that Django should not get involved in serving static content (quite rightly), but it certainly makes setup more laborious. One can achieve a happy medium in Rails using <code>X-SendFile</code> - Rails gets the request and then punts serving to Apache.</p><h2>Generating URLs</h2><p>There is an equivalent to Rails' <code>url_for</code> which is available inside Django templates, it's the filter <code>{ % url %}</code>. Unfortunately, the first time I wanted to create a URL was actually in Python code - I wanted to redirect. I was unable to find a way to use <code>url</code> from Python code. There is <code>get_absolute_url</code>, which can be implemented inside the model, but it's only for instances.</p><h1>Overall</h1><p>I think Django is fairly straightforward for the Rails programmer. The fact that you get a 'free' admin backend (similar to ActiveScaffold), is certainly handy. There are a lot of sources of online information and tutorials, so it's quite easy to get up and running. The main impression I got was of a small framework - while Rails covers a great range of functionality, I felt I came up against Django limitations rather quickly. That may be due to not looking in the right places, but my Google searches showed that a lot of other people were asking the same questions.</p>
+</section>
+<ul class="mt-8 flex justify-center text-2xl list-none">
+<li class="mr-4">
+
+<a href="/posts/a-beginner-s-sinatra-tutorial/"><</a></li>
+<li class="ml-4">
+
+<a href="/posts/editing-javascript-in-emacs/">></a></li></ul>
+</main></div></body></html>

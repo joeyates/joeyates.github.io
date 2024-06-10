@@ -1,0 +1,69 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>
+My Everyday find Command</title>
+<meta content="
+A wrapper for GNU find that does mostrly what you want with very few keypresses" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-0fbd9c0131bf82008867b19d09430267.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-f064f34aa9721a0a7efd222bae17a4e3.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive md:min-h-screen flex justify-center">
+<div class="max-w-full md:w-[40rem] bg-light-olive pt-4 px-10 pb-8">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-4">
+<a href="/posts/">Archives</a></li></ul></nav>
+<h1 class="leading-loose pt-2 pb-4 text-center text-2xl">
+
+My Everyday find Command</h1></header>
+
+<main class="max-w-full mx-1">
+
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-1">
+<div>2012/12/23</div>
+</div>
+<p>When I'm searching for files, I use this function:</p><pre><code class="language-shell"># f - everyday find
+# usage:
+#   f filename_fragment [path]
+
+# skips whatever you list in _exclude_matches
+_exclude_matches=(bundle .git *.pyc)
+_excludes=''
+
+for _match in $_exclude_matches; do
+  _excludes="${_excludes}-name '$_match' -prune -o "
+done
+
+eval "
+function my_everyday_find() {
+  find \$2 \
+    $_excludes \
+    -name \"*\$1*\"    \
+    -print;
+}
+"
+
+unset _exclude_matches _excludes _match
+alias f=my_everyday_find</code></pre><p>It searches for files and directories with partial matches of the first parameter:</p><pre><code class="language-shell">$ f 26
+./db/migrate/20121003094826_add_foo_to_bar.rb</code></pre><p>If I supply a second parameter, it is taken as the directory to search in:</p><pre><code class="language-shell">$ f 26 ..
+../api/db/migrate/20121003094826_add_foo_to_bar.rb
+../redmine/db/migrate/20091017212644_add_missing_indexes_to_messages.rb</code></pre>
+</section>
+<ul class="mt-8 flex justify-center text-2xl list-none">
+<li class="mr-4">
+
+<a href="/posts/instant-sinatra-starter/"><</a></li>
+<li class="ml-4">
+
+<a href="/posts/ruby-bareword-assignment-and-method-calls-with-implicit-self/">></a></li></ul>
+</main></div></body></html>
