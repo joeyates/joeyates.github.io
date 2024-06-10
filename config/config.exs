@@ -1,6 +1,6 @@
 import Config
 
-config :jgy_slime, :keep_lines, true
+config :slime, :keep_lines, true
 config :yamerl, node_mods: []
 
 config :datocms_graphql_client, :config,
