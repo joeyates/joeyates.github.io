@@ -1,26 +1,23 @@
 - content_for(:title)
-  - page = DatoCMS.Post.get!(params.id)
-  = page.title
+  = params.post.title
 - content_for(:description)
-  - page = DatoCMS.Post.get!(params.id)
-  = page.description
+  = params.post.description
 
-- page = DatoCMS.Post.get!(params.id)
-- date = date_to_s(DatoCMS.Post.date(page))
+- post = params.post
 section.space-y-4.prose
   .flex.justify-end.mb-1
-    div = date
+    div = date_to_s(post.published_on)
 
-  = structured_text_to_html(page.body)
+  = post.body
 
 ul.mt-8.flex.justify-center.text-2xl.list-none
   li.mr-4
-    = if params.previous do
-      a href="/posts/#{params.previous.slug}/" ="<"
+    = if params[:previous] do
+      a href=params.previous ="<"
     - else
       a ="<"
   li.ml-4
-    = if params.next do
-      a href="/posts/#{params.next.slug}/" =">"
+    = if params[:next] do
+      a href=params.next =">"
     - else
       a =">"

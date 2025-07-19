@@ -1,47 +1,50 @@
 - content_for(:title)
   elixir:
-    is_dev = context.env["MIX_ENV"] in [nil, :dev]
-    posts =
-      DatoCMS.Post.page(params.path, page: params.page, published: !is_dev)
-      |> DatoCMS.by_creation_date()
-    first_year = hd(posts).created_at.year
-    last_year = Enum.at(posts, -1).created_at.year
-    period = if first_year == last_year do
-      first_year
-    else
-      "#{first_year} - #{last_year}"
-    end
+    most_recent_year = params.most_recent_year
+    least_recent_year = params.least_recent_year
+    period =
+      if most_recent_year == least_recent_year do
+        most_recent_year
+      else
+        "#{least_recent_year} - #{most_recent_year}"
+      end
   = "Posts #{period}"
 - content_for(:description)
   List of blog posts
 
 elixir:
-  is_dev = context.env["MIX_ENV"] in [nil, :dev]
-  posts_by_year =
-    DatoCMS.Post.page(params.path, page: params.page, published: !is_dev)
-    |> Enum.group_by(&(&1.created_at.year))
-  years = Map.keys(posts_by_year) |> Enum.sort() |> Enum.reverse()
+  year_block = partial("partials/year_header", %{year: params.most_recent_year})
+  {blocks, _year} = Enum.reduce(
+    params.posts,
+    {[year_block], params.most_recent_year},
+    fn post, {blocks, year} ->
+      block = partial("partials/post_item", %{post: post})
+      {blocks, year} =
+        if year != post.published_on.year do
+          year_block = partial("partials/year_header", %{year: post.published_on.year})
+          {[year_block | blocks], post.published_on.year}
+        else
+          {blocks, year}
+        end
+      {[block | blocks], year}
+    end
+  )
+  blocks = Enum.reverse(blocks)
 
-= Enum.map years, fn year ->
-  - posts = posts_by_year[year]
-  - by_date = posts |> DatoCMS.by_creation_date() |> Enum.reverse()
-  h3.font-bold.mt-4.text-2xl = year
-  ul
-    = Enum.map by_date, fn post ->
-      li class="mt-4"
-        a href="/posts/#{post.slug}/" = post.title
+ul
+  = blocks
 
 ul.flex.justify-center.text-2xl.list-none
   li
     a href="/posts/" ="|<"
   li
-    = if params.page > 1 do
-      a href="/posts/" ="<"
+    = if params.previous do
+      a href=params.previous ="<"
     - else
       a ="<"
   li
-    = if params.page < params.page_count do
-      a href="/posts/#{params.page + 1}/" =">"
+    = if params.next do
+      a href=params.next =">"
     - else
       a =">"
   li

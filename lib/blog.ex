@@ -25,86 +25,124 @@ defmodule Blog do
     statics: Enum.map(@statics, &%{source: &1, filename: &1})
   }
 
+  use Helpers
+
   import Fermo, only: [page: 4]
 
-  use Helpers
+  @per_page 20
 
   def config do
     DatoCMS.setup()
 
-    config = initial_config()
+    posts =
+      Blog.CMS.Post.fetch_all()
+      |> Enum.sort_by(&Date.to_iso8601(&1.published_on))
+      |> Enum.reverse()
 
     config =
-      page(
-        config,
-        "/templates/home.html.slim",
-        "/index.html",
-        %{id: "home", path: "/"}
-      )
-
-    config = add_posts(config)
+      initial_config()
+      |> add_home_page(posts)
+      |> add_paginated(posts)
+      |> add_posts(posts)
 
     {:ok, config}
   end
 
-  defp add_posts(config) do
-    post_count = DatoCMS.Post.count(published: Mix.env() != :dev)
-    index_page_count = Kernel.div(post_count - 1, DatoCMS.Post.per_page()) + 1
+  defp add_home_page(config, posts) do
+    most_recent_posts = Enum.take(posts, 15)
 
-    Enum.reduce(
-      1..index_page_count,
+    page(
       config,
-      fn i, acc ->
-        index_path = if i == 1, do: "/posts/index.html", else: "/posts/#{i}/index.html"
+      "/templates/home.html.slim",
+      "/",
+      %{posts: most_recent_posts}
+    )
+  end
 
-        acc =
-          page(
-            acc,
-            "/templates/posts.html.slim",
-            index_path,
-            %{
-              id: "posts##{i}",
-              page: i,
-              path: index_path,
-              page_count: index_page_count
-            }
-          )
+  defp add_posts(config, posts) do
+    paths = Enum.map(posts, &"/posts/#{&1.slug}/")
+    previous_paths = [nil | Enum.slice(paths, 0..-2//1)]
+    next_paths = Enum.slice(paths, 1..-1//1) ++ [nil]
 
-        posts = DatoCMS.Post.page(nil, page: i, published: Mix.env() != :dev)
+    {config, _previous_paths, _next_paths} =
+      Enum.reduce(
+        posts,
+        {config, previous_paths, next_paths},
+        fn post, {config, previous_paths, next_paths} ->
+          [previous | previous_paths] = previous_paths
+          [next | next_paths] = next_paths
 
-        posts
-        |> Enum.with_index()
-        |> Enum.reduce(
-          acc,
-          fn {post, j}, acc1 ->
-            previous = if j > 0, do: Enum.at(posts, j - 1)
-            next = Enum.at(posts, j + 1)
+          config =
+            page(
+              config,
+              "/templates/post.html.slim",
+              "/posts/#{post.slug}/",
+              %{
+                post: post,
+                previous: previous,
+                next: next
+              }
+            )
 
-            acc1 =
-              page(
-                acc1,
-                "/templates/post.html.slim",
-                "/posts/#{post.slug}/index.html",
-                %{
-                  id: post.id,
-                  previous: previous,
-                  next: next
-                }
-              )
+          {config, previous_paths, next_paths}
+        end
+      )
 
-            if post.old_path == "" do
-              acc1
-            else
-              page(
-                acc1,
-                "/templates/redirect.html.slim",
-                "#{post.old_path}index.html",
-                %{id: "redirect_#{post.id}", location: "/posts/#{post.slug}/"}
-              )
-            end
+    config
+  end
+
+  defp add_paginated(config, posts) do
+    post_count = length(posts)
+    page_count = Kernel.div(post_count - 1, @per_page) + 1
+    last = page_count - 1
+
+    posts
+    |> Enum.chunk_every(@per_page)
+    |> Enum.with_index()
+    |> Enum.reduce(
+      config,
+      fn {posts_chunk, index}, config ->
+        path = index_page_path(index)
+
+        previous =
+          if index == 0 do
+            nil
+          else
+            index_page_path(index - 1)
           end
+
+        next =
+          if index == last do
+            nil
+          else
+            index_page_path(index + 1)
+          end
+
+        most_recent_year = hd(posts_chunk).published_on.year
+        least_recent_year = Enum.at(posts_chunk, -1).published_on.year
+
+        page(
+          config,
+          "/templates/posts.html.slim",
+          path,
+          %{
+            posts: posts_chunk,
+            previous: previous,
+            next: next,
+            page_count: page_count,
+            most_recent_year: most_recent_year,
+            least_recent_year: least_recent_year
+          }
         )
       end
     )
+  end
+
+  defp index_page_path(index) do
+    if index == 0 do
+      "/posts/"
+    else
+      "/posts/#{index + 1}/"
+    end
   end
 end
