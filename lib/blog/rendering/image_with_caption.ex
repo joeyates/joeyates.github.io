@@ -1,4 +1,4 @@
-defmodule JoeyatesBlog.Rendering.ImageWithCaption do
+defmodule Blog.Rendering.ImageWithCaption do
   def render(block, _dat, _options) do
     [
       ~s(

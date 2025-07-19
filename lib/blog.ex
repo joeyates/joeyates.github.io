@@ -1,6 +1,6 @@
-defmodule JoeyatesBlog do
+defmodule Blog do
   @moduledoc """
-  Documentation for `JoeyatesBlog`.
+  Documentation for `Blog`.
   """
 
   @statics ~w(
@@ -22,8 +22,9 @@ defmodule JoeyatesBlog do
     localized_paths: true,
     exclude: ["templates/*", "layouts/*", "javascripts/*", "stylesheets/*"],
     sitemap: %{},
-    statics: Enum.map(@statics, &(%{source: &1, filename: &1}))
+    statics: Enum.map(@statics, &%{source: &1, filename: &1})
   }
+
   import Fermo, only: [page: 4]
 
   use Helpers
@@ -33,12 +34,13 @@ defmodule JoeyatesBlog do
 
     config = initial_config()
 
-    config = page(
-      config,
-      "/templates/home.html.slim",
-      "/index.html",
-      %{id: "home", path: "/"}
-    )
+    config =
+      page(
+        config,
+        "/templates/home.html.slim",
+        "/index.html",
+        %{id: "home", path: "/"}
+      )
 
     config = add_posts(config)
 
@@ -55,19 +57,21 @@ defmodule JoeyatesBlog do
       fn i, acc ->
         index_path = if i == 1, do: "/posts/index.html", else: "/posts/#{i}/index.html"
 
-        acc = page(
-          acc,
-          "/templates/posts.html.slim",
-          index_path,
-          %{
-            id: "posts##{i}",
-            page: i,
-            path: index_path,
-            page_count: index_page_count
-          }
-        )
+        acc =
+          page(
+            acc,
+            "/templates/posts.html.slim",
+            index_path,
+            %{
+              id: "posts##{i}",
+              page: i,
+              path: index_path,
+              page_count: index_page_count
+            }
+          )
 
         posts = CMS.Post.page(nil, page: i, published: Mix.env() != :dev)
+
         posts
         |> Enum.with_index()
         |> Enum.reduce(
@@ -75,16 +79,18 @@ defmodule JoeyatesBlog do
           fn {post, j}, acc1 ->
             previous = if j > 0, do: Enum.at(posts, j - 1)
             next = Enum.at(posts, j + 1)
-            acc1 = page(
-              acc1,
-              "/templates/post.html.slim",
-              "/posts/#{post.slug}/index.html",
-              %{
-                id: post.id,
-                previous: previous,
-                next: next
-              }
-            )
+
+            acc1 =
+              page(
+                acc1,
+                "/templates/post.html.slim",
+                "/posts/#{post.slug}/index.html",
+                %{
+                  id: post.id,
+                  previous: previous,
+                  next: next
+                }
+              )
 
             if post.old_path == "" do
               acc1

@@ -1,4 +1,4 @@
-# JoeyatesBlog Fermo Project
+# joeyates.io Blog Fermo Project
 
 # Setup
 

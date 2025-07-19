@@ -1,11 +1,11 @@
-defmodule JoeyatesBlog.MixProject do
+defmodule Blog.MixProject do
   @moduledoc false
 
   use Mix.Project
 
   def project do
     [
-      app: :joeyates_blog,
+      app: :blog,
       version: "0.1.0",
       elixir: "~> 1.9",
       compilers: Mix.compilers() ++ [:fermo],

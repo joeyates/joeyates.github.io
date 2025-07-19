@@ -1,8 +1,8 @@
-defmodule JoeyatesBlog.Rendering do
+defmodule Blog.Rendering do
   @moduledoc false
 
-  alias JoeyatesBlog.Rendering.ImageWithCaption
-  alias JoeyatesBlog.Rendering.Table
+  alias Blog.Rendering.ImageWithCaption
+  alias Blog.Rendering.Table
   alias DatoCMS.StructuredText
 
   def date_to_s(%{year: year, month: month, day: day}) do
@@ -10,6 +10,7 @@ defmodule JoeyatesBlog.Rendering do
   end
 
   def prepend_zeroes(n, count \\ 2)
+
   def prepend_zeroes(n, count) when is_integer(n) do
     Integer.to_string(n)
     |> prepend_zeroes(count)
@@ -21,18 +22,21 @@ defmodule JoeyatesBlog.Rendering do
 
   @blank_dast %{
     value: %{
-      schema: "dast", document: %{type: "root", children: []}
+      schema: "dast",
+      document: %{type: "root", children: []}
     }
   }
 
   def structured_text_to_html(dast) do
     dast = dast || @blank_dast
+
     options = %{
       renderers: %{
         render_block: &render_block/3,
         render_code: &render_code/3
       }
     }
+
     DatoCMS.StructuredText.to_html(dast, options)
   end
 
@@ -54,6 +58,7 @@ defmodule JoeyatesBlog.Rendering do
 
   def render_code(%{marks: ["code" | marks]} = span, dast, options) do
     other = Map.put(span, :marks, marks)
+
     ["<code>"] ++
       StructuredText.render(other, dast, options) ++
       ["</code>"]

@@ -5,11 +5,14 @@ defmodule Helpers do
     quote do
       import DatoCMS.GraphQLClient.MetaTagHelpers
       import FermoHelpers.Links
-      import JoeyatesBlog.Rendering, only: [
-        date_to_s: 1,
-        structured_text_to_html: 1
-      ]
-      alias JoeyatesBlog.CMS
+
+      import Blog.Rendering,
+        only: [
+          date_to_s: 1,
+          structured_text_to_html: 1
+        ]
+
+      alias Blog.CMS
 
       def environment, do: System.get_env("BUILD_ENV")
     end
