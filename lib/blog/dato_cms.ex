@@ -1,4 +1,4 @@
-defmodule Blog.CMS do
+defmodule Blog.DatoCMS do
   @moduledoc false
 
   alias Fermo.DatoCMS.GraphQLClient

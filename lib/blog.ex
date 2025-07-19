@@ -30,7 +30,7 @@ defmodule Blog do
   use Helpers
 
   def config do
-    CMS.setup()
+    DatoCMS.setup()
 
     config = initial_config()
 
@@ -48,8 +48,8 @@ defmodule Blog do
   end
 
   defp add_posts(config) do
-    post_count = CMS.Post.count(published: Mix.env() != :dev)
-    index_page_count = Kernel.div(post_count - 1, CMS.Post.per_page()) + 1
+    post_count = DatoCMS.Post.count(published: Mix.env() != :dev)
+    index_page_count = Kernel.div(post_count - 1, DatoCMS.Post.per_page()) + 1
 
     Enum.reduce(
       1..index_page_count,
@@ -70,7 +70,7 @@ defmodule Blog do
             }
           )
 
-        posts = CMS.Post.page(nil, page: i, published: Mix.env() != :dev)
+        posts = DatoCMS.Post.page(nil, page: i, published: Mix.env() != :dev)
 
         posts
         |> Enum.with_index()

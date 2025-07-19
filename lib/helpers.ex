@@ -12,7 +12,7 @@ defmodule Helpers do
           structured_text_to_html: 1
         ]
 
-      alias Blog.CMS
+      alias Blog.DatoCMS
 
       def environment, do: System.get_env("BUILD_ENV")
     end

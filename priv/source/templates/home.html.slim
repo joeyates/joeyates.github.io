@@ -1,5 +1,5 @@
 - content_for(:title)
-  - page = CMS.home(params.path)
+  - page = DatoCMS.home(params.path)
   = page.title
 - content_for(:description)
   = "Musings about programming, mostly"
@@ -7,7 +7,7 @@
 - is_dev = context.env["MIX_ENV"] in [nil, :dev]
 
 section
-  - latest_posts = CMS.Post.latest(params.path, count: 15, published: !is_dev)
+  - latest_posts = DatoCMS.Post.latest(params.path, count: 15, published: !is_dev)
   ul
     = Enum.map latest_posts, fn post ->
       li.pb-4

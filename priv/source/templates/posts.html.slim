@@ -2,8 +2,8 @@
   elixir:
     is_dev = context.env["MIX_ENV"] in [nil, :dev]
     posts =
-      CMS.Post.page(params.path, page: params.page, published: !is_dev)
-      |> CMS.by_creation_date()
+      DatoCMS.Post.page(params.path, page: params.page, published: !is_dev)
+      |> DatoCMS.by_creation_date()
     first_year = hd(posts).created_at.year
     last_year = Enum.at(posts, -1).created_at.year
     period = if first_year == last_year do
@@ -18,13 +18,13 @@
 elixir:
   is_dev = context.env["MIX_ENV"] in [nil, :dev]
   posts_by_year =
-    CMS.Post.page(params.path, page: params.page, published: !is_dev)
+    DatoCMS.Post.page(params.path, page: params.page, published: !is_dev)
     |> Enum.group_by(&(&1.created_at.year))
   years = Map.keys(posts_by_year) |> Enum.sort() |> Enum.reverse()
 
 = Enum.map years, fn year ->
   - posts = posts_by_year[year]
-  - by_date = posts |> CMS.by_creation_date() |> Enum.reverse()
+  - by_date = posts |> DatoCMS.by_creation_date() |> Enum.reverse()
   h3.font-bold.mt-4.text-2xl = year
   ul
     = Enum.map by_date, fn post ->

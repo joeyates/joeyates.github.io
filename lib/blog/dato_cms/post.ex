@@ -1,9 +1,9 @@
-defmodule Blog.CMS.Post do
+defmodule Blog.DatoCMS.Post do
   @moduledoc false
 
   alias Fermo.DatoCMS.GraphQLClient
 
-  alias Blog.CMS
+  alias Blog.DatoCMS
 
   @enforce_keys ~w(id created_at title)a
   defstruct ~w(id created_at slug published_on old_path title description body categories)a
@@ -103,7 +103,7 @@ defmodule Blog.CMS.Post do
     count = Keyword.get(opts, :count, 10)
 
     page(for_page, opts)
-    |> CMS.by_creation_date()
+    |> DatoCMS.by_creation_date()
     |> Enum.reverse()
     |> Enum.take(count)
   end
