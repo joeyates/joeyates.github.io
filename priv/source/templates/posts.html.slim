@@ -1,4 +1,17 @@
-- content_for(:title)
+- content_for(:document_title)
+  elixir:
+    most_recent_year = params.most_recent_year
+    least_recent_year = params.least_recent_year
+    period =
+      if most_recent_year == least_recent_year do
+        most_recent_year
+      else
+        "#{least_recent_year} - #{most_recent_year}"
+      end
+  = "Posts #{period} - Joe Yates' Blog"
+- content_for(:meta_description)
+  List of blog posts
+- content_for(:page_title)
   elixir:
     most_recent_year = params.most_recent_year
     least_recent_year = params.least_recent_year
@@ -9,8 +22,6 @@
         "#{least_recent_year} - #{most_recent_year}"
       end
   = "Posts #{period}"
-- content_for(:description)
-  List of blog posts
 
 elixir:
   year_block = partial("partials/year_header", %{year: params.most_recent_year})

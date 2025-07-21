@@ -1,7 +1,9 @@
-- content_for(:title)
-  = params.post.title
-- content_for(:description)
+- content_for(:document_title)
+  = "#{params.post.title} - Joe Yates' Blog"
+- content_for(:meta_description)
   = params.post.description
+- content_for(:page_title)
+  = params.post.title
 
 - post = params.post
 section.space-y-4.prose

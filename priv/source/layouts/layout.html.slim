@@ -3,8 +3,8 @@
 = "<!DOCTYPE html>"
 html lang="en"
   head
-    title = yield_content(:title)
-    meta name="description" content=yield_content(:description)
+    title = yield_content(:document_title)
+    meta name="description" content=yield_content(:meta_description)
     meta name="viewport" content="width=device-width"
     link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"
     = partial "partials/head"
