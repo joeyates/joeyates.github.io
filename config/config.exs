@@ -3,13 +3,9 @@ import Config
 config :slime, :keep_lines, true
 config :yamerl, node_mods: []
 
-config :datocms_graphql_client, :config,
-  api_key: System.fetch_env!("DATOCMS_API_KEY"),
-  backend: DatoCMS.GraphQLClient.Backends.MemoizingClient
-
-config :fermo, :base_url, System.fetch_env!("BASE_URL")
-
-config :fermo, :assets, [Fermo.Assets.ESBuild, Fermo.Assets.Tailwind]
+config :fermo,
+  base_url: System.fetch_env!("BASE_URL"),
+  assets: [Fermo.Assets.ESBuild, Fermo.Assets.Tailwind]
 
 config :esbuild,
   version: "0.16.4",
@@ -29,8 +25,21 @@ config :tailwind,
     )
   ]
 
-environment_config = "#{Mix.env()}.exs"
+case config_env() do
+  :dev ->
+    Application.put_env(
+      :fermo,
+      :live_asset_pipelines,
+      esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+      tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+    )
 
-if File.regular?(Path.join("config", environment_config)) do
-  import_config environment_config
+    Application.put_env(
+      :fermo,
+      :live_mode_servers,
+      [{Registry, keys: :unique, name: :datocms_live_update_query_registry}]
+    )
+
+  _ ->
+    nil
 end
