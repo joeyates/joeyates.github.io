@@ -3,10 +3,6 @@ import Config
 config :slime, :keep_lines, true
 config :yamerl, node_mods: []
 
-config :datocms_graphql_client, :config,
-  api_key: System.fetch_env!("DATOCMS_API_KEY"),
-  backend: DatoCMS.GraphQLClient.Backends.MemoizingClient
-
 config :fermo, :base_url, System.fetch_env!("BASE_URL")
 
 config :fermo, :assets, [Fermo.Assets.ESBuild, Fermo.Assets.Tailwind]

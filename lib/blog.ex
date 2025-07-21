@@ -25,15 +25,11 @@ defmodule Blog do
     statics: Enum.map(@statics, &%{source: &1, filename: &1})
   }
 
-  use Helpers
-
   import Fermo, only: [page: 4]
 
   @per_page 20
 
   def config do
-    DatoCMS.setup()
-
     posts =
       Blog.CMS.Post.fetch_all()
       |> Enum.sort_by(&Date.to_iso8601(&1.published_on))

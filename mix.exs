@@ -26,8 +26,6 @@ defmodule Blog.MixProject do
       {:tailwind, "~> 0.2.0"},
       {:fermo, "0.19.0", override: true},
       {:payloadcms_graphql_client, "~> 0.1.8"},
-      {:datocms_graphql_client, "0.17.0"},
-      {:fermo_datocms_graphql_client, "0.17.0"},
       {:fermo_helpers, "~> 0.12.0"}
     ]
   end
