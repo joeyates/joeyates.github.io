@@ -29,18 +29,25 @@ elixir:
 ul
   = blocks
 
-ul.flex.justify-center.text-2xl.list-none
-  li
-    a href="/posts/" ="|<"
+ul.paginate
   li
     = if params.previous do
-      a href=params.previous ="<"
+      a href="/posts/" ="|<"
     - else
-      a ="<"
+      a.disabled ="|<"
+  li
+    = if params.previous do
+      a.mr-2 href=params.previous ="<"
+    - else
+      a.mr-2.disabled class="hover:black" ="<"
+
   li
     = if params.next do
-      a href=params.next =">"
+      a.mr-2 href=params.next =">"
     - else
-      a =">"
+      a.mr-2.disabled =">"
   li
-    a href="/posts/#{params.page_count}/" =">|"
+    = if params.next do
+      a href="/posts/#{params.page_count}/" =">|"
+    - else
+      a.disabled =">|"

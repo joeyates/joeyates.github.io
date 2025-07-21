@@ -16,3 +16,29 @@
   }
   /* base overrides: END */
 }
+@layer components {
+  /* components: BEGIN */
+  .paginate {
+    @apply mt-8;
+    @apply flex;
+    @apply gap-4;
+    @apply justify-center;
+    @apply text-xl;
+    @apply list-none;
+  }
+  .paginate a {
+    @apply rounded;
+    @apply px-4;
+    @apply py-2;
+    @apply bg-olive;
+    @apply text-black;
+  }
+  .paginate a:hover {
+    background-color: rgb(0 128 128);
+  }
+  .paginate a.disabled:hover {
+    @apply bg-olive;
+    @apply text-black;
+  }
+  /* components: END */
+}

@@ -14,14 +14,14 @@ section.space-y-4.prose
 
   = post.body
 
-ul.mt-4.flex.justify-center.text-2xl.list-none
-  li.mr-4
+ul.paginate
+  li
     = if params[:previous] do
       a href=params.previous ="<"
     - else
-      a ="<"
-  li.ml-4
+      a.disabled ="<"
+  li
     = if params[:next] do
       a href=params.next =">"
     - else
-      a =">"
+      a.disabled =">"
