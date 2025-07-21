@@ -75,14 +75,18 @@ defmodule Blog.CMS.Post do
     [~s(<pre><code class="language-#{language}">), node.fields.code, "</code></pre>"]
   end
 
-  defp render_upload(
-         %{type: "upload", value: value} = _node,
-         _options
-       ) do
-    %{width: width, height: height, url: url, alt: alt} = value
+  defp render_upload(%{type: "upload", value: value} = _node, _options) do
+    %{width: width, height: height, url: path, alt: alt} = value
+    url = image_url(path)
 
     [
       ~s(<img src="#{url}" alt="#{alt}" width="#{width}" height="#{height}">)
     ]
+  end
+
+  defp image_url(path), do: Path.join(image_base_url(), path)
+
+  defp image_base_url do
+    Application.fetch_env!(:blog, :image_base_url)
   end
 end

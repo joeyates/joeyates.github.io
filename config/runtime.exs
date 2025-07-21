@@ -16,4 +16,4 @@ config :payloadcms_graphql_client,
   api_key: payloadcms_api_key,
   endpoint: payloadcms_graphql_endpoint
 
-config :fermo, :base_url, System.fetch_env!("BASE_URL")
+config :blog, image_base_url: System.fetch_env!("IMAGE_BASE_URL")
