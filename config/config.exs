@@ -3,9 +3,9 @@ import Config
 config :slime, :keep_lines, true
 config :yamerl, node_mods: []
 
-config :fermo, :base_url, System.fetch_env!("BASE_URL")
-
-config :fermo, :assets, [Fermo.Assets.ESBuild, Fermo.Assets.Tailwind]
+config :fermo,
+  base_url: System.fetch_env!("BASE_URL"),
+  assets: [Fermo.Assets.ESBuild, Fermo.Assets.Tailwind]
 
 config :esbuild,
   version: "0.16.4",
