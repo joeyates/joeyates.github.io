@@ -20,7 +20,7 @@ config :tailwind,
   default: [
     args: ~w(
       --config=tailwind.config.js
-      --input=priv/source/app.css
+      --input=priv/source/stylesheets/app.css
       --output=build/assets/app.css
     )
   ]
