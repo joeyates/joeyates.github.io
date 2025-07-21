@@ -44,13 +44,19 @@ defmodule Blog do
   end
 
   defp add_home_page(config, posts) do
+    latest = hd(posts)
+    oldest = List.last(posts)
+    full_year_range = "#{oldest.published_on.year} - #{latest.published_on.year}"
     most_recent_posts = Enum.take(posts, 15)
 
     page(
       config,
       "/templates/home.html.slim",
       "/",
-      %{posts: most_recent_posts}
+      %{
+        posts: most_recent_posts,
+        full_year_range: full_year_range
+      }
     )
   end
 
@@ -116,6 +122,13 @@ defmodule Blog do
         most_recent_year = hd(posts_chunk).published_on.year
         least_recent_year = Enum.at(posts_chunk, -1).published_on.year
 
+        year_range =
+          if most_recent_year == least_recent_year do
+            most_recent_year
+          else
+            "#{least_recent_year} - #{most_recent_year}"
+          end
+
         page(
           config,
           "/templates/posts.html.slim",
@@ -126,7 +139,7 @@ defmodule Blog do
             next: next,
             page_count: page_count,
             most_recent_year: most_recent_year,
-            least_recent_year: least_recent_year
+            year_range: year_range
           }
         )
       end

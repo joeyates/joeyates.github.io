@@ -4,6 +4,8 @@
   = params.post.description
 - content_for(:page_title)
   = params.post.title
+- content_for(:year)
+  = params.post.published_on.year
 
 - post = params.post
 section.space-y-4.prose
@@ -12,7 +14,7 @@ section.space-y-4.prose
 
   = post.body
 
-ul.mt-8.flex.justify-center.text-2xl.list-none
+ul.mt-4.flex.justify-center.text-2xl.list-none
   li.mr-4
     = if params[:previous] do
       a href=params.previous ="<"
