@@ -11,7 +11,9 @@ section
   ul
     = Enum.map params.posts, fn post ->
       li.pb-4
-        a href="/posts/#{post.slug}/" = post.title
+        a href="/posts/#{post.slug}/"
+          = post.title
+          span.text-sm.text-olive &gt;&gt;
 
 hr.mb-6
 
