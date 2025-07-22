@@ -22,11 +22,14 @@ defmodule Blog.MixProject do
 
   def deps do
     [
+      # Page generation
+      {:fermo, "0.19.0", override: true},
+      {:fermo_helpers, "~> 0.12.0"},
+      # Assets
       {:esbuild, "~> 0.7.0"},
       {:tailwind, "~> 0.2.0"},
-      {:fermo, "0.19.0", override: true},
-      {:payloadcms_graphql_client, "~> 0.1.8"},
-      {:fermo_helpers, "~> 0.12.0"}
+      # CMS
+      {:payloadcms_graphql_client, "~> 0.1.8"}
     ]
   end
 end
