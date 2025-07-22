@@ -29,7 +29,9 @@ defmodule Blog.MixProject do
       {:esbuild, "~> 0.7.0"},
       {:tailwind, "~> 0.2.0"},
       # CMS
-      {:payloadcms_graphql_client, "~> 0.1.8"}
+      {:payloadcms_graphql_client, "~> 0.1.8"},
+      # Code quality
+      {:green, "~> 0.1.4", only: [:dev]}
     ]
   end
 end

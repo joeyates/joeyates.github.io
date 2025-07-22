@@ -5,14 +5,15 @@ defmodule Blog.Rendering do
     "#{prepend_zeroes(year, 4)}/#{prepend_zeroes(month)}/#{prepend_zeroes(day)}"
   end
 
-  def prepend_zeroes(n, count \\ 2)
+  def prepend_zeroes(number, count \\ 2)
 
-  def prepend_zeroes(n, count) when is_integer(n) do
-    Integer.to_string(n)
+  def prepend_zeroes(number, count) when is_integer(number) do
+    number
+    |> Integer.to_string()
     |> prepend_zeroes(count)
   end
 
-  def prepend_zeroes(n, count) do
-    String.pad_leading(n, count, ["0"])
+  def prepend_zeroes(number, count) do
+    String.pad_leading(number, count, ["0"])
   end
 end
