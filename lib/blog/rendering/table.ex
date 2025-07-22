@@ -15,17 +15,21 @@ defmodule Blog.Rendering.Table do
   defp rows(%{columns: columns, data: data}) do
     keys = Enum.map(columns, &String.to_atom(&1))
 
-    data
-    |> Enum.flat_map(fn row ->
-      cells =
-        keys
-        |> Enum.map(fn key ->
-          ~s(<td class="border-[#404020] px-1">#{row[key]}</td>)
-        end)
+    Enum.flat_map(
+      data,
+      fn row ->
+        cells =
+          Enum.map(
+            keys,
+            fn key ->
+              ~s(<td class="border-[#404020] px-1">#{row[key]}</td>)
+            end
+          )
 
-      [~S(<tr class="odd-[#f0f0d0] even-[#e0e0c0]">)] ++
-        cells ++
-        ["</tr>"]
-    end)
+        [~S(<tr class="odd-[#f0f0d0] even-[#e0e0c0]">)] ++
+          cells ++
+          ["</tr>"]
+      end
+    )
   end
 end
