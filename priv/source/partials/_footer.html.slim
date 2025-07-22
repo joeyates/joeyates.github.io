@@ -1,3 +1,10 @@
-footer.bottom-0.mt-4.flex.justify-center.text-sm
-  p = "&copy; Joe Yates #{yield_content(:year)}"
+footer.bottom-0.mt-6
+  hr.mb-4
+
+  .flex.flex-row.justify-between.text-sm
+    div
+      span Made with
+      a href="https://github.com/joeyates/fermo" Fermo
+
+    p = "&copy; Joe Yates #{yield_content(:year)}"
 
