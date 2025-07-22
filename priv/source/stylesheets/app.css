@@ -6,7 +6,7 @@
 @layer base {
   /* base overrides: BEGIN */
   a {
-    @apply text-black;
+    @apply text-very-dark-olive;
   }
   a:hover {
     @apply text-olive;
