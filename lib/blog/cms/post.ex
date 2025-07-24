@@ -29,14 +29,32 @@ defmodule Blog.CMS.Post do
           published_on: Date.t()
         }
 
-  def fetch_all(published \\ true) do
-    {:ok, results} =
-      GQL.query_all_docs(:Posts, @default_docs,
-        sort: "updatedAt",
-        where: %{published: %{equals: published}}
-      )
+  def fetch_all(opts) do
+    only_published = Keyword.get(opts, :only_published, true)
+    query_options = [sort: "publishedOn"]
 
-    Enum.map(results, &graphql_result_to_post/1)
+    query_options =
+      if only_published do
+        Keyword.put(query_options, :where, %{published: %{equals: true}})
+      else
+        query_options
+      end
+
+    with {:ok, results} when is_list(results) <-
+           GQL.query_all_docs(:Posts, @default_docs, query_options) do
+      results
+      |> Enum.map(&graphql_result_to_post/1)
+      |> then(&{:ok, &1})
+    else
+      {:error, reason} ->
+        {:error, reason}
+
+      {:ok, results} ->
+        {:error, "Unexpected result format: #{inspect(results)}"}
+
+      response ->
+        {:error, "Failed to fetch posts, response: #{inspect(response)}"}
+    end
   end
 
   @doc """
@@ -55,8 +73,11 @@ defmodule Blog.CMS.Post do
         %{renderers: %{block: &render_block/2, upload: &render_upload/2}}
       )
 
-    {:ok, published_on_datetime, 0} = DateTime.from_iso8601(result.publishedOn)
-    published_on = DateTime.to_date(published_on_datetime)
+    published_on =
+      if result.publishedOn do
+        {:ok, published_on_datetime, 0} = DateTime.from_iso8601(result.publishedOn)
+        DateTime.to_date(published_on_datetime)
+      end
 
     %__MODULE__{
       id: result.id,

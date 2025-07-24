@@ -29,8 +29,12 @@ defmodule Blog do
   @per_page 20
 
   def config do
+    show_unpublished = Mix.env() == :dev
+    {:ok, posts} = Blog.CMS.Post.fetch_all(only_published: !show_unpublished)
+
     posts =
-      Blog.CMS.Post.fetch_all()
+      posts
+      |> optionally_add_published_on(show_unpublished)
       |> Enum.sort_by(&Date.to_iso8601(&1.published_on))
       |> Enum.reverse()
 
@@ -151,6 +155,16 @@ defmodule Blog do
       "/posts/"
     else
       "/posts/#{index + 1}/"
+    end
+  end
+
+  defp optionally_add_published_on(posts, show_unpublished) do
+    if show_unpublished do
+      Enum.map(posts, fn post ->
+        Map.put(post, :published_on, post.published_on || Date.utc_today())
+      end)
+    else
+      posts
     end
   end
 end
