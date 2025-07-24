@@ -13,7 +13,7 @@ elixir:
     params.posts,
     {[year_block], params.most_recent_year},
     fn post, {blocks, year} ->
-      block = partial("partials/post_item", %{post: post})
+      block = partial("partials/post_list_item", %{post: post})
       {blocks, year} =
         if year != post.published_on.year do
           year_block = partial("partials/year_header", %{year: post.published_on.year})

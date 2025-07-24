@@ -26,7 +26,7 @@ defmodule Blog do
 
   import Fermo, only: [page: 4]
 
-  @per_page 20
+  @per_page 10
 
   def config do
     show_unpublished = Mix.env() == :dev
