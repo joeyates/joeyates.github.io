@@ -114,7 +114,10 @@ defmodule Blog.CMS.Post do
     url = image_url(path)
 
     [
-      ~s(<img src="#{url}" alt="#{alt}" width="#{width}" height="#{height}">)
+      ~s(<div class="flex flex-col items-center not-prose">),
+      ~s(<img src="#{url}" alt="#{alt}" width="#{width}" height="#{height}">),
+      ~s(<span class="mt-1 text-sm text-gray-500">#{alt}</span>),
+      "</div>"
     ]
   end
 
