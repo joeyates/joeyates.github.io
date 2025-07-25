@@ -93,7 +93,12 @@ defmodule Blog.CMS.Post do
          %{type: "block", fields: %{blockType: "Code", language: language}} = node,
          _options
        ) do
-    [~s(<pre><code class="language-#{language}">), node.fields.code, "</code></pre>"]
+
+    [
+      ~s(<pre title="language: #{language}"><code class="language-#{language}">),
+      String.replace(node.fields.code, "<", "&lt;"),
+      "</code></pre>"
+    ]
   end
 
   defp render_upload(%{type: "upload", value: value} = _node, _options) do
