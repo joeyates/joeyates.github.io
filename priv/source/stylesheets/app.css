@@ -42,3 +42,10 @@
   }
   /* components: END */
 }
+
+/* Smaller code on mobile */
+code[class*="language-"],
+pre[class*="language-"] {
+  @apply text-sm;
+  @apply md:text-base;
+}
