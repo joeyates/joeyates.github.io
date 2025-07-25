@@ -101,9 +101,11 @@ defmodule Blog.CMS.Post do
     language = Map.get(@language_mapping, language, language)
 
     [
-      ~s(<pre title="language: #{language}"><code class="language-#{language}">),
+      ~s(<pre title="language: #{language}">),
+      ~s(<code class="language-#{language}">),
       String.replace(node.fields.code, "<", "&lt;"),
-      "</code></pre>"
+      "</code>",
+      "</pre>"
     ]
   end
 
