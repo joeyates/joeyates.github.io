@@ -4,30 +4,40 @@ defmodule Blog.CMS.Category do
   """
 
   alias PayloadcmsGraphqlClient, as: GQL
+  alias Blog.CMS.CategoryPost
 
-  @attributes ~w(id name slug)a
-  @enforce_keys @attributes
-  defstruct @attributes
+  @required_attributes ~w(id name slug)a
+  @enforce_keys @required_attributes
+  defstruct [posts: []] ++ @required_attributes
 
   @default_docs """
     {
       id
       name
       slug
+      relatedPosts {
+        docs {
+          id
+          title
+          description
+          slug
+        }
+      }
     }
   """
 
   @type t :: %__MODULE__{
           id: String.t(),
           name: String.t(),
-          slug: String.t()
+          slug: String.t(),
+          posts: [Blog.CMS.CategoryPost.t()]
         }
 
   def fetch_all() do
     with {:ok, results} when is_list(results) <- GQL.query_all_docs(:Categories, @default_docs) do
       results
       |> Enum.sort_by(&String.downcase(&1.name))
-      |> Enum.map(&graphql_result_to_post/1)
+      |> Enum.map(&new_from_graphql_result/1)
       |> then(&{:ok, &1})
     else
       {:error, reason} ->
@@ -41,11 +51,14 @@ defmodule Blog.CMS.Category do
     end
   end
 
-  defp graphql_result_to_post(result) do
+  def new_from_graphql_result(result) do
+    posts = Enum.map(result.relatedPosts.docs, &CategoryPost.new_from_graphql_result/1)
+
     %__MODULE__{
       id: result.id,
       name: result.name,
-      slug: result.slug
+      slug: result.slug,
+      posts: posts
     }
   end
 end
