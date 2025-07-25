@@ -1,0 +1,40 @@
+- content_for(:document_title)
+  = "Categories - Joe Yates' Blog"
+- content_for(:meta_description)
+  List of categories
+- content_for(:page_title)
+  = "Categories"
+
+ul
+  = Enum.map params.categories, fn category ->
+    = if length(category.posts) > 0 do
+      li class="mb-4"
+        div = category.name
+
+        ul.ml-8
+          = Enum.map category.posts, fn post ->
+            li class="mb-4"
+              a href="/posts/#{post.slug}/" = post.title
+
+ul.paginate
+  li
+    = if params.previous do
+      a href="/categories/" ="|<"
+    - else
+      a.disabled ="|<"
+  li
+    = if params.previous do
+      a.mr-2 href=params.previous ="<"
+    - else
+      a.mr-2.disabled class="hover:black" ="<"
+
+  li
+    = if params.next do
+      a.mr-2 href=params.next =">"
+    - else
+      a.mr-2.disabled =">"
+  li
+    = if params.next do
+      a href="/categories/#{params.page_count}/" =">|"
+    - else
+      a.disabled =">|"

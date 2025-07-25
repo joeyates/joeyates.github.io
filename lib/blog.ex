@@ -26,12 +26,64 @@ defmodule Blog do
 
   import Fermo, only: [page: 4]
 
-  @per_page 10
+  @categories_per_page 10
+  @posts_per_page 10
 
   def config() do
     initial_config()
+    |> add_category_related_pages()
     |> add_post_related_pages()
     |> then(&{:ok, &1})
+  end
+
+  defp add_category_related_pages(config) do
+    {:ok, categories} = Blog.CMS.Category.fetch_all()
+
+    categories = Enum.sort_by(categories, &String.downcase(&1.name))
+
+    add_paginated_categories(config, categories)
+  end
+
+  defp add_paginated_categories(config, categories) do
+    category_count = length(categories)
+    page_count = Kernel.div(category_count - 1, @categories_per_page) + 1
+    last = page_count - 1
+
+    categories
+    |> Enum.chunk_every(@categories_per_page)
+    |> Enum.with_index()
+    |> Enum.reduce(
+      config,
+      fn {categories_chunk, index}, config ->
+        path = categories_path(index)
+
+        previous =
+          if index == 0 do
+            nil
+          else
+            categories_path(index - 1)
+          end
+
+        next =
+          if index == last do
+            nil
+          else
+            categories_path(index + 1)
+          end
+
+        page(
+          config,
+          "/templates/categories.html.slim",
+          path,
+          %{
+            categories: categories_chunk,
+            previous: previous,
+            next: next,
+            page_count: page_count
+          }
+        )
+      end
+    )
   end
 
   defp add_post_related_pages(config) do
@@ -39,7 +91,7 @@ defmodule Blog do
 
     config
     |> add_home_page(posts)
-    |> add_paginated(posts)
+    |> add_paginated_posts(posts)
     |> add_posts(posts)
   end
 
@@ -102,31 +154,31 @@ defmodule Blog do
     config
   end
 
-  defp add_paginated(config, posts) do
+  defp add_paginated_posts(config, posts) do
     post_count = length(posts)
-    page_count = Kernel.div(post_count - 1, @per_page) + 1
+    page_count = Kernel.div(post_count - 1, @posts_per_page) + 1
     last = page_count - 1
 
     posts
-    |> Enum.chunk_every(@per_page)
+    |> Enum.chunk_every(@posts_per_page)
     |> Enum.with_index()
     |> Enum.reduce(
       config,
       fn {posts_chunk, index}, config ->
-        path = index_page_path(index)
+        path = posts_path(index)
 
         previous =
           if index == 0 do
             nil
           else
-            index_page_path(index - 1)
+            posts_path(index - 1)
           end
 
         next =
           if index == last do
             nil
           else
-            index_page_path(index + 1)
+            posts_path(index + 1)
           end
 
         most_recent_year = hd(posts_chunk).published_on.year
@@ -156,11 +208,19 @@ defmodule Blog do
     )
   end
 
-  defp index_page_path(index) do
+  defp posts_path(index) do
     if index == 0 do
       "/posts/"
     else
       "/posts/#{index + 1}/"
+    end
+  end
+
+  defp categories_path(index) do
+    if index == 0 do
+      "/categories/"
+    else
+      "/categories/#{index + 1}/"
     end
   end
 
