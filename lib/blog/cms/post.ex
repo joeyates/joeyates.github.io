@@ -89,10 +89,16 @@ defmodule Blog.CMS.Post do
     }
   end
 
+  # Map blog-cms editor languages to Prism.js languages
+  @language_mapping %{
+    "objective-c" => "objectivec"
+  }
+
   defp render_block(
          %{type: "block", fields: %{blockType: "Code", language: language}} = node,
          _options
        ) do
+    language = Map.get(@language_mapping, language, language)
 
     [
       ~s(<pre title="language: #{language}"><code class="language-#{language}">),
