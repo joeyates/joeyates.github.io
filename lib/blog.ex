@@ -28,23 +28,29 @@ defmodule Blog do
 
   @per_page 10
 
-  def config do
+  def config() do
+    initial_config()
+    |> add_post_related_pages()
+    |> then(&{:ok, &1})
+  end
+
+  defp add_post_related_pages(config) do
+    posts = fetch_posts()
+
+    config
+    |> add_home_page(posts)
+    |> add_paginated(posts)
+    |> add_posts(posts)
+  end
+
+  defp fetch_posts() do
     show_unpublished = Mix.env() == :dev
     {:ok, posts} = Blog.CMS.Post.fetch_all(only_published: !show_unpublished)
 
-    posts =
-      posts
-      |> optionally_add_published_on(show_unpublished)
-      |> Enum.sort_by(&Date.to_iso8601(&1.published_on))
-      |> Enum.reverse()
-
-    config =
-      initial_config()
-      |> add_home_page(posts)
-      |> add_paginated(posts)
-      |> add_posts(posts)
-
-    {:ok, config}
+    posts
+    |> optionally_add_published_on(show_unpublished)
+    |> Enum.sort_by(&Date.to_iso8601(&1.published_on))
+    |> Enum.reverse()
   end
 
   defp add_home_page(config, posts) do
