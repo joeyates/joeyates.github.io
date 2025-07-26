@@ -1,7 +1,15 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "tailwindcss";
 @import "./prism";
+
+@theme {
+  --color-light-olive: #f0f0d0;
+  --color-olive: #808000;
+  --color-dark-olive: #556b2f;
+  --color-very-dark-olive: #323f1b;
+}
 
 @layer base {
   /* base overrides: BEGIN */
@@ -16,6 +24,7 @@
   }
   /* base overrides: END */
 }
+
 @layer components {
   /* components: BEGIN */
   .paginate {

@@ -27,7 +27,7 @@ defmodule Blog.MixProject do
       {:fermo_helpers, "~> 0.12.0"},
       # Assets
       {:esbuild, "~> 0.7.0"},
-      {:tailwind, "~> 0.2.0"},
+      {:tailwind, "~> 0.3.0"},
       # CMS
       {:payloadcms_graphql_client, "~> 0.1.9"},
       # Code quality

@@ -8,19 +8,6 @@ module.exports = {
     './priv/source/**/*.html.slim',
     './lib/blog/**/*.ex'
   ],
-  theme: {
-    extend: {
-      colors: {
-        'light-olive': '#f0f0d0',
-        olive: '#808000',
-        'dark-olive': '#556b2f',
-        'very-dark-olive': '#323f1b'
-      },
-      width: {
-        200: '50rem'
-      }
-    }
-  },
   plugins: [
     require('@tailwindcss/forms'),
     require('@tailwindcss/typography'),
