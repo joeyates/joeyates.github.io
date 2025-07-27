@@ -34,11 +34,6 @@ case config_env() do
       tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
     )
 
-    Application.put_env(
-      :fermo,
-      :live_mode_servers,
-      [{Registry, keys: :unique, name: :datocms_live_update_query_registry}]
-    )
     live_reload_js = """
     window.addEventListener("message", event => {
       if (event.data?.type === "payload-document-event") {
