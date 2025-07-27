@@ -23,7 +23,7 @@ defmodule Blog.MixProject do
   def deps do
     [
       # Page generation
-      {:fermo, "0.19.2", override: true},
+      {:fermo, "0.20.0", override: true},
       {:fermo_helpers, "~> 0.12.0"},
       # Assets
       {:esbuild, "~> 0.7.0"},
