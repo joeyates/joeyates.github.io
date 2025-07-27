@@ -3,20 +3,9 @@ import Config
 config :slime, :keep_lines, true
 config :yamerl, node_mods: []
 
-live_reload_js = """
-window.addEventListener("message", event => {
-  console.debug("Blog live reload: Received message from parent window:", event)
-  if (event.data?.type === "payload-document-event") {
-    console.debug("Blog live reload: Received payload-document-event, rebuilding page")
-    window.fermoLiveSocket.rebuild()
-  }
-})
-"""
-
 config :fermo,
   base_url: System.fetch_env!("BASE_URL"),
-  assets: [Fermo.Assets.ESBuild, Fermo.Assets.Tailwind],
-  live_reload_js: live_reload_js
+  assets: [Fermo.Assets.ESBuild, Fermo.Assets.Tailwind]
 
 config :esbuild,
   version: "0.16.4",
@@ -50,6 +39,16 @@ case config_env() do
       :live_mode_servers,
       [{Registry, keys: :unique, name: :datocms_live_update_query_registry}]
     )
+    live_reload_js = """
+    window.addEventListener("message", event => {
+      if (event.data?.type === "payload-document-event") {
+        console.debug("Blog live reload: Received payload-document-event, rebuilding page", event)
+        window.fermoLiveSocket.rebuild()
+      }
+    })
+    """
+
+    config :fermo, live_reload_js: live_reload_js
 
   _ ->
     nil
