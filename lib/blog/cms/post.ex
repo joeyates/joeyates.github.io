@@ -70,7 +70,13 @@ defmodule Blog.CMS.Post do
     rendered =
       RichText.to_html(
         result.body,
-        %{renderers: %{block: &render_block/2, upload: &render_upload/2}}
+        %{
+          renderers: %{
+            block: &render_block/2,
+            paragraph: &render_paragraph/2,
+            upload: &render_upload/2
+          }
+        }
       )
 
     published_on =
@@ -106,6 +112,21 @@ defmodule Blog.CMS.Post do
       String.replace(node.fields.code, "<", "&lt;"),
       "</code>",
       "</pre>"
+    ]
+  end
+
+  defp render_paragraph(%{type: "paragraph"} = node, options) do
+    attributes =
+      if node.format == "right" do
+        ~s( class="text-right")
+      else
+        ""
+      end
+
+    [
+      "<p#{attributes}>",
+      Enum.flat_map(node.children, &RichText.render(&1, options)),
+      "</p>"
     ]
   end
 

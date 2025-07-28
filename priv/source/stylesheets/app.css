@@ -23,6 +23,22 @@
     @apply text-olive;
   }
 
+  table {
+    @apply w-full;
+    @apply border-collapse;
+    @apply my-8;
+  }
+
+  th {
+    @apply text-right;
+    @apply px-2;
+  }
+
+  td {
+    @apply text-left;
+    @apply px-2;
+  }
+
   h1 {
     @apply text-center;
     @apply text-2xl;
