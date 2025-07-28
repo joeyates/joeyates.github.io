@@ -28,7 +28,7 @@
 @layer components {
   /* components: BEGIN */
   .paginate {
-    @apply mt-8;
+    @apply mt-16;
     @apply flex;
     @apply gap-4;
     @apply justify-center;
@@ -39,7 +39,7 @@
     @apply rounded;
     @apply px-4;
     @apply py-2;
-    @apply bg-dark-olive;
+    @apply bg-olive;
     @apply text-black;
   }
   .paginate a.disabled {

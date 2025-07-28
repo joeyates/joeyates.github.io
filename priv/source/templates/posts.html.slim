@@ -32,22 +32,22 @@ ul
 ul.paginate
   li
     = if params.previous do
-      a href="/posts/" ="|<"
+      a href="/posts/" ="↞ Latest"
     - else
-      a.disabled ="|<"
+      a.disabled ="↞ Latest"
   li
     = if params.previous do
-      a.mr-2 href=params.previous ="<"
+      a.mr-2 href=params.previous ="← Newer"
     - else
-      a.mr-2.disabled class="hover:black" ="<"
+      a.mr-2.disabled class="hover:black" ="← Newer"
 
   li
     = if params.next do
-      a.mr-2 href=params.next =">"
+      a.mr-2 href=params.next ="Older →"
     - else
-      a.mr-2.disabled =">"
+      a.mr-2.disabled ="Older →"
   li
     = if params.next do
-      a href="/posts/#{params.page_count}/" =">|"
+      a href="/posts/#{params.page_count}/" ="Oldest ↠"
     - else
-      a.disabled =">|"
+      a.disabled ="Oldest ↠"

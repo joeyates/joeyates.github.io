@@ -20,11 +20,11 @@ section.space-y-4.prose
 ul.paginate
   li
     = if params[:previous] do
-      a href=params.previous ="<"
+      a href=params.previous ="← Newer"
     - else
-      a.disabled ="<"
+      a.disabled ="← Newer"
   li
     = if params[:next] do
-      a href=params.next =">"
+      a href=params.next ="Older →"
     - else
-      a.disabled =">"
+      a.disabled ="Older →"
