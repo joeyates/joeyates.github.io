@@ -39,15 +39,11 @@
     @apply rounded;
     @apply px-4;
     @apply py-2;
-    @apply bg-olive;
+    @apply bg-dark-olive;
     @apply text-black;
   }
-  .paginate a:hover {
-    background-color: rgb(0 128 128);
-  }
-  .paginate a.disabled:hover {
-    @apply bg-olive;
-    @apply text-black;
+  .paginate a.disabled {
+    @apply bg-slate-300;
   }
   /* components: END */
 }
