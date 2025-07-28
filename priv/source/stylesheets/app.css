@@ -22,6 +22,28 @@
   a:active {
     @apply text-olive;
   }
+
+  h1 {
+    @apply text-center;
+    @apply text-2xl;
+    @apply font-bold;
+    @apply mt-8;
+    @apply mb-4;
+  }
+
+  h2 {
+    @apply text-xl;
+    @apply font-bold;
+    @apply mt-8;
+    @apply mb-4;
+  }
+
+  h3 {
+    @apply text-lg;
+    @apply font-bold;
+    @apply mt-6;
+    @apply mb-2;
+  }
   /* base overrides: END */
 }
 
