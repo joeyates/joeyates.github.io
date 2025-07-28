@@ -10,9 +10,6 @@
 section
   ul
     = Enum.map params.posts, fn post ->
-      li.pb-4
-        a href="/posts/#{post.slug}/"
-          = post.title
-          span.text-sm.text-olive &gt;&gt;
+      = partial("partials/post_list_item", %{post: post})
 
 a href="/posts/" Other posts...
