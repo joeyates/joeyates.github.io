@@ -105,14 +105,21 @@ defmodule Blog.CMS.Post do
          _options
        ) do
     language = Map.get(@language_mapping, language, language)
+    filename = node.fields[:blockName]
 
-    [
+    code = [
       ~s(<pre title="language: #{language}">),
       ~s(<code class="language-#{language}">),
       String.replace(node.fields.code, "<", "&lt;"),
       "</code>",
       "</pre>"
     ]
+
+    if filename != "" do
+      [~s(<div class="text-sm text-gray-500 mb-0">#{filename}:</div>)] ++ code
+    else
+      code
+    end
   end
 
   defp render_paragraph(%{type: "paragraph"} = node, options) do
