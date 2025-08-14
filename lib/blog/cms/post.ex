@@ -137,7 +137,7 @@ defmodule Blog.CMS.Post do
     [
       ~s(<div class="flex flex-col items-center not-prose">),
       ~s(<img src="#{url}" alt="#{alt}" width="#{width}" height="#{height}">),
-      ~s(<span class="mt-1 text-sm text-gray-500">#{alt}</span>),
+      ~s(<div class="mt-1 text-sm text-gray-500 text-center">#{alt}</div>),
       "</div>"
     ]
   end
