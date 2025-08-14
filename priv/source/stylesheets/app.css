@@ -76,7 +76,7 @@
 @layer components {
   /* components: BEGIN */
   .paginate {
-    @apply mt-16;
+    @apply mt-8;
     @apply flex;
     @apply gap-4;
     @apply justify-center;
