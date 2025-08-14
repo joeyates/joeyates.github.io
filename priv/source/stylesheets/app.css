@@ -28,6 +28,11 @@
     @apply underline-offset-4;
   }
 
+  .prose li {
+    @apply list-disc;
+    @apply ml-4;
+  }
+
   table {
     @apply w-full;
     @apply border-collapse;
