@@ -23,6 +23,11 @@
     @apply text-olive;
   }
 
+  .prose a {
+    @apply underline;
+    @apply underline-offset-4;
+  }
+
   table {
     @apply w-full;
     @apply border-collapse;
