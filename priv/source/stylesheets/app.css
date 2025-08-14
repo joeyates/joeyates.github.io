@@ -75,7 +75,7 @@
     @apply flex;
     @apply gap-4;
     @apply justify-center;
-    @apply text-xl;
+    @apply text-lg;
     @apply list-none;
   }
   .paginate a {
