@@ -1,0 +1,148 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>A Beginner's Sinatra Tutorial - Joe Yates' Blog</title>
+<meta content="The first steps in using the Ruby web framework Sinatra" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+A Beginner's Sinatra Tutorial</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2010/04/07</div>
+</div>
+<h2 class="text-lg">
+The first steps in using the Ruby web framework Sinatra
+</h2>
+<p>In the olden days your first program was probably in BASIC and was run from the command line, nowadays the equivalent is Web programming.</p><p>Using Sinatra reminds me of my first programming experiences - you write a tiny bit of code, with no boilerplate and get to see a result.</p><p>What follows owes a lot to the <a href="http://www.sinatrarb.com/intro.html" target="_blank">Sinatra README</a>.</p><h1>Installation</h1><p>On Linux, you'll need Ruby and Rubygems installed (if not you should find installation instructions easily enough via a Web search).</p><p>Apart from Ruby, you'll need to use a text editor (e.g. GEdit) a Web browser and the Terminal (normally found in the Applications menu under Accessories).</p><p>Next install Sinatra:</p><pre title="language: shell"><code class="language-shell">$ gem install sinatra</code></pre><h1>1. Hello World!</h1><div class="text-sm text-gray-500 mb-0">minimal.rb:</div><pre title="language: ruby"><code class="language-ruby">require 'rubygems' if RUBY_VERSION &lt; '1.9'
+require 'sinatra';
+
+get '/' do
+  'Minimal Sinatra Hello World!'
+end</code></pre><p>Now, open a Terminal window and type:</p><pre title="language: shell"><code class="language-shell">ruby minimal.rb</code></pre><p>Finally, go to this address: <a href="http://127.0.0.1:4567/" target="_blank">http://127.0.0.1:4567/</a></p><p>To stop the program, go to the Terminal window and press Ctrl+C</p><h1>2. Adding Structure: Sinatra::Base</h1><p>It's useful to structure the program as a class.</p><div class="text-sm text-gray-500 mb-0">sinatra_base.rb:</div><pre title="language: ruby"><code class="language-ruby">require 'rubygems' if RUBY_VERSION &lt; "1.9"
+require 'sinatra/base'
+
+class MyApp &lt; Sinatra::Base
+  get '/' do
+    'Hello World!'
+  end
+end
+
+MyApp.run!</code></pre><p>Run it:</p><pre title="language: shell"><code class="language-shell">ruby sinatra_base.rb</code></pre><h1>3. Structure: A Separate App File</h1><p>Create two files.</p><div class="text-sm text-gray-500 mb-0">my_app.rb:</div><pre title="language: ruby"><code class="language-ruby">require 'rubygems' if RUBY_VERSION &lt; "1.9"
+require 'sinatra/base'
+
+class MyApp &lt; Sinatra::Base
+  get '/' do
+    'Hello World from MyApp in separate file!'
+  end
+end</code></pre><div class="text-sm text-gray-500 mb-0">run_my_app.rb:</div><pre title="language: ruby"><code class="language-ruby">require 'my_app'
+
+MyApp.run!</code></pre><p>Run it:</p><pre title="language: shell"><code class="language-shell">$ ruby run_my_app.rb</code></pre><h1>4. Rackup</h1><p>Instead of writing a script to start the app, we can use Rackup to launch the same script:</p><p>Create a file 'config.ru':</p><div class="text-sm text-gray-500 mb-0">config.ru:</div><pre title="language: ruby"><code class="language-ruby">require 'my_app'
+
+run MyApp.new</code></pre><p>Run it:</p><pre title="language: shell"><code class="language-shell">$ rackup config.ru</code></pre><p>This time the application is visible at <a href="http://127.0.0.1:9292" target="_blank">http://127.0.0.1:9292</a></p><p>If we want it to have the same address as before, we can run it like this:</p><pre title="language: shell"><code class="language-shell">rackup config.ru --port=4567</code></pre><h1>5. Static Files</h1><p>A Web application will often have dynamic content (what we've created so far) and static content (e.g. images).</p><p>Create a directory 'static', and create a file called index.html containing the following:</p><div class="text-sm text-gray-500 mb-0">index.html:</div><pre title="language: html"><code class="language-html">&lt;p>This is a static file.&lt;/p></code></pre><div class="text-sm text-gray-500 mb-0">my_app.rb:</div><pre title="language: ruby"><code class="language-ruby">require 'rubygems' if RUBY_VERSION &lt; "1.9"
+require 'sinatra/base'
+
+class MyApp &lt; Sinatra::Base
+  set :static, true
+  set :public, File.dirname(__FILE__) + '/static'
+end</code></pre><p>Now, if you run rackup, and go to <a href="http://127.0.0.1:4567/index.html" target="_blank">http://127.0.0.1:4567/index.html</a> you will see the content.</p><h1>6. Routes</h1><div class="text-sm text-gray-500 mb-0">routes.html:</div><pre title="language: html"><code class="language-html">&lt;ul>
+  &lt;li>&lt;a href="/named_via_params/foo">Named parameters via params Hash&lt;/a>&lt;/li>,
+  &lt;li>&lt;a href="/named_via_block_parameter/foo">Named parameters via block parameters&lt;/a>&lt;/li>,
+  &lt;li>&lt;a href="/splat/foo/bar/baz">Multiple parameters via params[:splat]&lt;/a>&lt;/li>,
+  &lt;li>&lt;a href="/splat_extension/myfile.txt">Filename via params[:splat]&lt;/a>&lt;/li>,
+  &lt;li>&lt;a href="/regexp_params_captures/foobar">Using regular expression via params[:captures]&lt;/a>&lt;/li>,
+  &lt;li>&lt;a href="/regexp_captures_via_block_parameter/foobar">Using regular expression via block parameters&lt;/a>&lt;/li>.
+&lt;/ul></code></pre><div class="text-sm text-gray-500 mb-0">my_app.rb:</div><pre title="language: ruby"><code class="language-ruby">require 'rubygems' if RUBY_VERSION &lt; "1.9"
+require 'sinatra/base'
+
+class MyApp &lt; Sinatra::Base
+  set :static, true
+  set :public, File.dirname(__FILE__) + '/public'
+
+  get '/named_via_params/:argument' do
+    "
+Using: '/named_via_params/:argument'&lt;br/>
+params[:argument] -> #{params[:argument]} (Try changing it)
+"
+  end
+
+  get '/named_via_block_parameter/:argument' do |argument|
+    "
+Using: '/named_via_block_parameter/:argument'&lt;br/>
+argument -> #{argument}
+"
+  end
+
+  get '/splat/*/bar/*' do
+    "
+Using: '/splat/*/bar/*'&lt;br/>
+params[:splat] -> #{params[:splat].join(', ')}
+"
+  end
+
+  get '/splat_extension/*.*' do
+    "
+Using: '/splat_extension/*.*'&lt;br/>
+filename -> #{params[:splat][0]}&lt;br/>
+extension -> #{params[:splat][1]}
+"
+  end
+
+  get %r{/regexp_params_captures/([\w]+)} do
+    "params[:captures].first -> '#{params[:captures].first}'"
+  end
+
+  get %r{/regexp_captures_via_block_parameter/([\w]+)} do |c|
+    "c -> '#{c}'"
+  end
+end</code></pre><p>Go to <a href="http://127.0.0.1:4567/routes.html" target="_blank">http://127.0.0.1:4567/routes.html</a></p><p>You will see a list of links which exemplify different types of route matching.</p><h1>7. Templates</h1><p>Create a <code>views</code> directory.</p><p>In :</p><div class="text-sm text-gray-500 mb-0">views/index.erb:</div><pre title="language: shell"><code class="language-shell">This is &lt;%= @foo %></code></pre><div class="text-sm text-gray-500 mb-0">my_app.rb:</div><pre title="language: ruby"><code class="language-ruby">require 'rubygems' if RUBY_VERSION &lt; "1.9"
+
+require 'sinatra/base'
+require 'erb'
+
+class MyApp &lt; Sinatra::Base
+  get '/template' do
+    @foo = 'erb'
+    erb :index
+  end
+end</code></pre><p>You should get the following on <a href="http://localhost:4567/template" target="_blank">http://localhost:4567/template</a>:</p><div class="flex flex-col items-center not-prose"><img src="https://blog-cms.joeyates.info/api/media/file/sinatra-erb-template.png" alt="Sinatra ERB Template" width="530" height="166"><div class="mt-1 text-sm text-gray-500 text-center">Sinatra ERB Template</div></div>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/cuil-fail/">← Newer</a></li>
+<li>
+
+<a href="/posts/a-rails-programmer-s-first-django-application/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2010</p>
+</div></footer>
+</div></body></html>

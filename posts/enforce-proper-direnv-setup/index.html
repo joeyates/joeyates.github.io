@@ -1,0 +1,138 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Enforce Proper direnv Setup - Joe Yates' Blog</title>
+<meta content="Two direnv extensions which help ensure a project's environment variables are properly set up" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+Enforce Proper direnv Setup</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2025/08/14</div>
+</div>
+<h2 class="text-lg">
+Two direnv extensions which help ensure a project's environment variables are properly set up
+</h2>
+<h3>Why direnv?</h3><p>I prefer to use <a href="https://direnv.net/" target="_blank">direnv</a> in development rather than <code>.env</code> files because direnv provides configuration via the environment itself, rather than via a system that has to be explicitly loaded. The application knows nothing about how its environment is set up.</p><h3>My Requirements</h3><p>I want any project I create to have a template for setting up development environment and checks that things stay aligned.</p><p>First, I add a note to every project's README to indicate that direnv is required in development.</p><p>Any developer who works a project configured this way will need to set it up.</p><p>Once they've got that working, the developer (who may be myself months later!) needs to know what values to set and what they mean.</p><p>I achieve this by through the combination of <code>.envrc</code> and <code>.envrc.private</code> and the use of two direnv functions that check that everything's been set up correctly.</p><h3>.envrc</h3><p>All my projects have an <code>.envrc</code> file which is <em>included</em> in the repo and which look like this:</p><div class="text-sm text-gray-500 mb-0">.envrc:</div><pre title="language: shell"><code class="language-shell"># SOME_REQUIRED_VARIABLE: some variable that must be set for the application to run
+export SOME_REQUIRED_VARIABLE=
+# SOME_OTHER_VAR: (optional) a variable you don't necessarily need to set
+export SOME_OTHER_VAR=
+# A_VARIABLE_WITH_A_DEFAULT: true*|false - a variable that has a default
+export A_VARIABLE_WITH_A_DEFAULT=true
+
+source_env .envrc.private
+source_env .config/direnvrc
+
+ensure_all_documented
+ensure_all_set</code></pre><p>All the environment variables that the application relies on to be set are included, possibily with default values. Each variable has documentation, which can also indicate if the variable is <code>optional</code>.</p><h3>The Checks</h3><p>Two direnv extensions, <code>ensure_all_documented</code> and <code>ensure_all_set</code>, are defined in the project:</p><div class="text-sm text-gray-500 mb-0">.config/direnvrc:</div><pre title="language: shell"><code class="language-shell"># This file provides the following direnv extensions:
+# * ensure_all_documented
+# * ensure_all_set
+# It assumes .envrc lists all environment variables *required* by a project,
+# by exporting them set equal to an empty string:
+#     export MYVAR=
+# or, to the default value:
+#     export MYVAR=some-default
+# .envrc.private (which should be excluded from source control) supplies the values
+# for required variables.
+
+# Usage:
+# 1. In `.envrc`, document all exports:
+#
+#     # MYVAR: a value I want to set
+#     export MYVAR=
+#     # OTHERVAR: (optional) a value I might want to set
+#     export OTHERVAR=
+#
+#     source_env .envrc.private
+#
+# 2. In `.envrc.private`, set all required values:
+#
+#     export MYVAR=foo
+#
+# 3. At the end of `.envrc`, source this file:
+#
+#     source_env .config/direnvrc
+
+__direnv_print_error() (
+  local RED="\e[1;31m"
+  local DEFAULT="\e[0m"
+  echo -e "${RED}$1${DEFAULT}"
+)
+
+all_exports() (
+  # Find lines with exports of environment variables,
+  # collect the names of the environment variables.
+  # To get exported environment variables as an array
+  # do this:
+  #     local exports=($(all_exports))
+  grep -Po '(?&lt;=^export )[A-Z0-9_]+(?==)' .envrc
+)
+
+# Ensure that all exports from .envrc are documented,
+# unless they are marked as (optional).
+# A comment should be as follows:
+# '# VARIABLE: documentation'
+ensure_all_documented() (
+  local exports=($(all_exports))
+  for (( i=0; i&lt;${#exports[@]}; i++ ))
+  do
+    local export=${exports[$i]}
+    grep -P "^# $export:" .envrc >/dev/null || __direnv_print_error "direnv: export $export does not have a comment"
+  done
+)
+
+ensure_all_set() (
+  local exports=($(all_exports))
+  for (( i=0; i&lt;${#exports[@]}; i++ ))
+  do
+    local export=${exports[$i]}
+    # Skip optional exports
+    if grep -P "^# $export: \(optional\)" .envrc >/dev/null; then
+      continue
+    fi
+    if [ -z ${!export} ]; then
+      __direnv_print_error "direnv: export $export is unset. Either set it in .envrc.private or mark it as optional by adding a comment '# $export: (optional) ...'"
+    fi
+  done
+)</code></pre><p><code>ensure_all_set</code> checks that all the environment variables set in <code>.envrc</code> have been given a value.</p><p><code>ensure_all_set</code> is an automatic version of direnv's own <a href="https://direnv.net/man/direnv-stdlib.1.html#codeenvvarsrequired-ltvarnamegt-ltvarnamegt-code" target="_blank"><code>env_vars_required</code></a>. Unlike <code>env_vars_required</code>, it doesn't require a list of the variables to check - it checks every variable that is declared, so I believe it's less error prone. You can opt <b>out</b> of the check by putting <code>(optional)</code> in the documentation string.</p><p><code>ensure_all_documented</code> checks that all the environment variables in <code>.envrc</code> have a preceding comment matching <code>variable name + ": " + some text</code>. If they don't, it prints a warning in red:</p><div class="flex flex-col items-center not-prose"><img src="https://blog-cms.joeyates.info/api/media/file/ensure-all-documented-warning.png" alt="<code>ensure_all_documented</code> gives a warning in red if a variable is declared without documentation" width="1140" height="46"><div class="mt-1 text-sm text-gray-500 text-center"><code>ensure_all_documented</code> gives a warning in red if a variable is declared without documentation</div></div><p>[edit: previously, I relied on these functions being set in the user's <code>~/.config/direnv/direnvrc</code>, but <a href="https://lobste.rs/s/pm5vdm/enforce_proper_direnv_setup#c_yf0yrp" target="_blank">a comment on Lobsters</a> convinced me that the code should be added to the repo.]</p><h3>.envrc.private</h3><p><code>.envrc.private</code>, is <em>excluded</em> from the repo (via <code>.gitignore</code>) and is expected to be present by <code>.envrc</code>, if it's not there, direnv gives a warning:</p><pre title="language: shell"><code class="language-shell">direnv: referenced .envrc.private does not exist</code></pre><p>So, that message will prompt the developer into creating <code>.envrc.private</code>.</p><p>This file needs to set the values from <code>.envrc</code> without defaults:</p><div class="text-sm text-gray-500 mb-0">.envrc.private:</div><pre title="language: shell"><code class="language-shell">export SOME_REQUIRED_VARIABLE=foo</code></pre><h3>Conclusion</h3><p>When a project configured in this way, setup is quite linear: README -> direnv -> create <code>.envrc.private</code>.</p><p>As things change during development, the checks ensure environment variables are set properly, and that future onboarding remains well documented.</p><p></p>
+</section>
+<ul class="paginate">
+<li>
+
+<a class="disabled">← Newer</a></li>
+<li>
+
+<a href="/posts/create-a-payloadcms-custom-slug-field/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2025</p>
+</div></footer>
+</div></body></html>

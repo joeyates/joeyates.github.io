@@ -1,0 +1,65 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>HTML History API - Joe Yates' Blog</title>
+<meta content="A quick look at the new API for handling browser state" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+HTML History API</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2011/07/18</div>
+</div>
+<h2 class="text-lg">
+A quick look at the new API for handling browser state
+</h2>
+<div class="flex flex-col items-center not-prose"><img src="https://blog-cms.joeyates.info/api/media/file/html5-history-api.png" alt="The Example App" width="531" height="203"><div class="mt-1 text-sm text-gray-500 text-center">The Example App</div></div><p>The HTML5 history API allows AJAX-based sites to avoid "breaking the back button". Every time you update the page, you store the new content is the window.history object. When the user presses the back button, you retrieve the current item from window.history and update the page with it.</p><p>What follows is an "all-in-one page" Sinatra/jQuery program. You can find the code <a href="https://gist.github.com/1090336" target="_blank">here</a>.</p><p>Run it like this:</p><pre title="language: shell"><code class="language-shell">$ ruby history_api.rb</code></pre><p>The program allows you to browse back and forwards through numbered pages.</p><p>When the first page is shown, the initial content of the container is stored in the history object:</p><pre title="language: js"><code class="language-js">history.replaceState($('#container').html(), '', location.href);</code></pre><p>As you select links, only the content of the 'container' DIV gets updated. An AJAX call is made to get the content, which is stored in the history object:</p><pre title="language: js"><code class="language-js">var anchor = this;
+
+ $.get(this.href, function(data) {
+   history.pushState(data, '', anchor.href);
+   $('#container').html(data);
+   updateLinks( anchor.getAttribute('data-number'));
+ });</code></pre><p>Each time the back button is pressed, the content is retrieved and placed in the container:</p><pre title="language: js"><code class="language-js">onpopstate = function(event) {
+  $('#container').html(event.state);
+};</code></pre><p>Notice that pressing the forward and back buttons updates the page correctly without needing to call the server.</p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/ruby-bareword-assignment-and-method-calls-with-implicit-self/">← Newer</a></li>
+<li>
+
+<a href="/posts/overriding-the-insertion-operator-for-c-template-classes/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2011</p>
+</div></footer>
+</div></body></html>

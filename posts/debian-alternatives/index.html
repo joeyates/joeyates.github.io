@@ -1,0 +1,82 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Debian Alternatives - Joe Yates' Blog</title>
+<meta content="How to use Debian Alternatives" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+Debian Alternatives</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2010/02/22</div>
+</div>
+<h2 class="text-lg">
+How to use Debian Alternatives
+</h2>
+<p>The Debian <a href="https://web.archive.org/web/20100523144058/https://debian-administration.org/articles/91" target="_blank">Alternatives</a> system manages groups of symlinks, which can be modified en-masse.</p><p>For each program that it has to manage, Alternatives expects there to be a symlink from <code>/usr/bin</code> to <code>/etc/alternatives/[PROGRAM NAME]</code>.</p><p>For example, with <code>vi</code>, on my system:</p><pre title="language: shell"><code class="language-shell">$ which vi
+/usr/bin/vi
+
+$ ls -l /usr/bin/vi
+lrwxrwxrwx 1 root root 20 2009-11-03 15:33 /usr/bin/vi -&gt; /etc/alternatives/vi
+
+$ ls -l /etc/alternatives/vi
+lrwxrwxrwx 1 root root 16 2009-11-03 15:33 /etc/alternatives/vi -&gt; /usr/bin/vim.nox
+
+$ ls -l /usr/bin/vim.nox
+-rwxr-xr-x 1 root root 1825312 2009-09-21 13:23 /usr/bin/vim.nox</code></pre><p>So, on my system, the command <code>vi</code> starts <code>/usr/bin/vim.nox</code> via 2 symlinks.</p><h1>Commands</h1><h2>List Main Programs</h2><pre title="language: shell"><code class="language-shell">$ update-alternatives --get-selections</code></pre><h2>Show setup for a certain program</h2><pre title="language: shell"><code class="language-shell">$ update-alternatives --display vi
+vi - auto mode
+ link currently points to /usr/bin/vim.nox
+/usr/bin/vim.nox - priority 40
+ slave vi.1.gz: /usr/share/man/man1/vim.1.gz
+ slave vi.fr.1.gz: /usr/share/man/fr/man1/vim.1.gz
+ slave vi.it.1.gz: /usr/share/man/it/man1/vim.1.gz
+ slave vi.pl.1.gz: /usr/share/man/pl/man1/vim.1.gz
+ slave vi.ru.1.gz: /usr/share/man/ru/man1/vim.1.gz
+/usr/bin/vim.tiny - priority 10
+ slave vi.1.gz: /usr/share/man/man1/vim.1.gz
+ slave vi.fr.1.gz: /usr/share/man/fr/man1/vim.1.gz
+ slave vi.it.1.gz: /usr/share/man/it/man1/vim.1.gz
+ slave vi.pl.1.gz: /usr/share/man/pl/man1/vim.1.gz
+ slave vi.ru.1.gz: /usr/share/man/ru/man1/vim.1.gz
+ Current `best' version is /usr/bin/vim.nox.</code></pre><h2>Set Up a Program</h2><pre title="language: shell"><code class="language-shell">$ sudo update-alternatives --install /usr/bin/[SYMLINK] [TITLE] /PATH/TO/PROGRAM 10</code></pre><p></p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/jruby-on-rails/">← Newer</a></li>
+<li>
+
+<a href="/posts/handling-multiple-versions-of-ruby/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2010</p>
+</div></footer>
+</div></body></html>

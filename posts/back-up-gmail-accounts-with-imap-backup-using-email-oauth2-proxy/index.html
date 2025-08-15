@@ -1,0 +1,75 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Back up GMail Accounts with imap-backup using email-oauth2-proxy - Joe Yates' Blog</title>
+<meta content="Use email-oauth2-proxy to handle GMail's OAuth2 authentication giving imap-backup access without the use of passwords which are considered unsafe by Google" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+Back up GMail Accounts with imap-backup using email-oauth2-proxy</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2023/10/24</div>
+</div>
+<h2 class="text-lg">
+Use email-oauth2-proxy to handle GMail's OAuth2 authentication giving imap-backup access without the use of passwords which are considered unsafe by Google
+</h2>
+<p>GMail and Office 365 provide access to user email accounts via OAuth 2 authentication.</p><p>OAuth is a useful system to manage third parties access to a user's data, but when it's the user who wants to access their <em>own</em> data, it's more laborious than simply using a password.</p><p>GMail <em>does</em> allow the use of passwords to access accounts, but their use is considered unsafe, and they may be disabled at some time in the future.</p><p><a href="https://github.com/joeyates/imap-backup" target="_blank">imap-backup</a> does not handle OAuth, so to back up GMail accounts you can use <a href="https://github.com/simonrob/email-oauth2-proxy" target="_blank">email-oauth2-proxy</a>.</p><h2>What's Needed</h2><p>You'll need to create some GMail credentials, then install and configure email-oauth2-proxy and finally <a href="https://github.com/joeyates/imap-backup#quick-start" target="_blank">install</a> and configure imap-backup.</p><p>To create the GMail credentials, you can <a href="https://developers.google.com/identity/protocols/oauth2/native-app#creatingcred" target="_blank">follow the official guide</a>. It takes a few minutes to set up, but once you get everything right, you obtain a client id and secret.</p><p>For the official email-oauth2-proxy setup procedure, see the <a href="https://github.com/simonrob/email-oauth2-proxy#getting-started" target="_blank">email-oauth2-proxy getting started documentation</a>. It offers two methods: either you clone the Git repository or you download a release.</p><h2>Install email-oauth2-proxy by Cloning the Repository</h2><p>To install via the Git repository, you'll need git and Python >= 3.6.</p><pre title="language: shell"><code class="language-shell">git clone https://github.com/simonrob/email-oauth2-proxy
+cd email-oauth2-proxy
+python -m pip install -r requirements.txt</code></pre><h2>Proxy Configuration</h2><p>email-oauth2-proxy loads a file called <code>emailproxy.config</code> which should be in the same directory as the program itself (<code>emailproxy.py</code>).</p><p>The repository comes with an <a href="https://github.com/simonrob/email-oauth2-proxy/blob/main/emailproxy.config" target="_blank">example configuration file</a>.</p><p>For GMail, you only really need this to get started:</p><pre title="language: shell"><code class="language-shell">[IMAP-1993]
+server_address = imap.gmail.com
+server_port = 993
+local_address = 127.0.0.1
+
+[YOUR_EMAIL@gmail.com]
+permission_url = https://accounts.google.com/o/oauth2/auth
+token_url = https://oauth2.googleapis.com/token
+oauth2_scope = https://mail.google.com/
+redirect_uri = http://localhost
+client_id = YOUR_CLIENT_ID.apps.googleusercontent.com
+client_secret = YOUR_SECRET</code></pre><p>email-oauth2-proxy modifies this file to store tokens.</p><h2>First Use</h2><p>Now, start the proxy</p><pre title="language: shell"><code class="language-shell">python emailproxy.py</code></pre><p>You should see a taskbar icon, like this:</p><div class="flex flex-col items-center not-prose"><img src="https://blog-cms.joeyates.info/api/media/file/proxy-taskbar-icon.png" alt="The email-oauth2-proxy taskbar icon" width="523" height="39"><div class="mt-1 text-sm text-gray-500 text-center">The email-oauth2-proxy taskbar icon</div></div><p>The GMail proxy is now running on port 1993.</p><h2>imap-backup Configuration</h2><p>To get started with imap-backup, you can use the new <code>single backup</code> command:</p><pre title="language: shell"><code class="language-shell">imap-backup single backup \
+  --email YOUR_EMAIL@gmail.com \
+  --password "" \
+  --connection-options '{"port": 1993, "ssl": false}' \
+  --server 127.0.0.1 \
+  --path my_backup</code></pre><p>This command will block.</p><p>Click on the proxy's taskbar icon, then on "Authorise account" and then on your email address.</p><p>This will open a browser window to carry out the OAuth authentication and authorization.</p><p>As the GMail API credentials you have created have not been verified, Google will try to dissuade you from continuing:</p><div class="flex flex-col items-center not-prose"><img src="https://blog-cms.joeyates.info/api/media/file/authorise-unverified-app.png" alt="Unverified app warning" width="678" height="753"><div class="mt-1 text-sm text-gray-500 text-center">Unverified app warning</div></div><p>Just click on 'Continue' here.</p><p>Once you have completed the OAuth flow, imap-backup will get unblocked and will run your backup.</p><h2>File-based imap-backup Configuration</h2><p>As an alternative to the invocation above, you can configure the account via imap-backup's setup procedure:</p><pre title="language: shell"><code class="language-shell">imap-backup -c my-imap-backup-config.json</code></pre><p>The account setup screen will be as follows:</p><div class="flex flex-col items-center not-prose"><img src="https://blog-cms.joeyates.info/api/media/file/imap-backup-account-configuration-for-email-proxy.png" alt="Configure imap-backup to access GMail via the proxy" width="1025" height="867"><div class="mt-1 text-sm text-gray-500 text-center">Configure imap-backup to access GMail via the proxy</div></div><p>Notice the <code>connection options</code> value, which sets the port and disables secure connections.</p><h2>Headless Usage</h2><p>You'll probably want run imap-backup in a non-interactive way, for example via a cron job.</p><p>If so, it is better to run the proxy in the same way - without the need for your intervention.</p><p>As long as you have already done the authorization flow, just run the proxy adding the <code>--no-gui</code> parameter:</p><pre title="language: shell"><code class="language-shell">python emailproxy.py --no-gui</code></pre><h2>That's it!</h2><p>Following this process will allow you to back up your GMail accounts in a fairly painless way.</p><p>It's certainly more laborious than using email + password, but once you've done the setup on Google Console the rest is quite straightforward.</p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/create-a-distributable-elixir-executable-using-bakeware/">← Newer</a></li>
+<li>
+
+<a href="/posts/connecting-to-a-running-phoenix-application-deployed-on-dokku/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2023</p>
+</div></footer>
+</div></body></html>

@@ -1,0 +1,75 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Show your Git Branch Name in your GNU Screen Status Line - Joe Yates' Blog</title>
+<meta content="Set up GNU Screen to show the current Git branch" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+Show your Git Branch Name in your GNU Screen Status Line</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2010/03/09</div>
+</div>
+<h2 class="text-lg">
+Set up GNU Screen to show the current Git branch
+</h2>
+<h1>Git Branch Prompt</h1><p><a href="https://web.archive.org/web/20200203205016/http://gitready.com/advanced/2009/01/23/bash-git-status.html" target="_blank">Many</a> <a href="http://github.com/lvv/git-prompt/" target="_blank">people</a> <a href="https://web.archive.org/web/20220818040746/http://www.jukie.net/bart/blog/20080404105620" target="_blank">have</a> written about showing the current git branch in your shell prompt.</p><p>There is even the Bash function <a href="https://web.archive.org/web/20100505194034/http://repo.or.cz/w/git.git?a=blob_plain;f=contrib/completion/git-completion.bash" target="_blank">__git_ps1</a> provided in the main Git repo.</p><p>I prefer to show info like the current time and current git branch in a GNU screen status line.</p><h1>Screen Status</h1><p>As I use screen constantly, I decided to take a different route: put the current branch name in my screen status line.</p><h1>Changing the Screen Current Directory</h1><p>When you start screen, it remembers the current directory. Issuing <code>cd</code> commands inside a shell does not change the value. The only way to change it is to issue a <code>screen</code> <code>chdir</code> command.</p><p>In order to know the current branch in a particular screen window, I needed to make screen's current directory change to follow the shell it is presenting.</p><p>I added the following to my <code>.bashrc</code>:</p><div class="text-sm text-gray-500 mb-0">.bashrc:</div><pre title="language: shell"><code class="language-shell">function set_screen_path() {
+  screen -X chdir "`pwd`"
+}
+
+case $TERM in
+screen*)
+  PROMPT_COMMAND=set_screen_path
+  ;;
+esac</code></pre><p>This is Bash specific, but similar code should work in other shells.</p><h1>git-current-branch</h1><p>Next, I created the following shell script to get the current Git path:</p><div class="text-sm text-gray-500 mb-0">git-current-branch:</div><pre title="language: shell"><code class="language-shell">#!/bin/sh
+
+git branch 2>/dev/null | grep '*' | sed 's/\* //'</code></pre><h1>.screenrc</h1><p>And finally, I added a 'backtick' command to my <code>.screenrc</code> file:</p><div class="text-sm text-gray-500 mb-0">.screenrc:</div><pre title="language: shell"><code class="language-shell">startup_message off
+
+backtick 1 0 1 git-current-branch
+
+hardstatus alwayslastline "%-w%{.bw}%n %t%{-}%+w %-45= %1`"
+
+screen -t bash 0
+screen -t edit 1
+select 0</code></pre><p>The important line is:</p><pre title="language: shell"><code class="language-shell">backtick 1 0 1 git-current-branch</code></pre><p>which creates a '<a href="http://www.gnu.org/software/screen/manual/html_node/Backtick.html" target="_blank">backtick command</a>' (number 1) which calls <code>git-current-branch</code> once a second via <code>%1\`</code> in the <code>hardstatus</code> line.</p><h1>The Result</h1><div class="flex flex-col items-center not-prose"><img src="https://blog-cms.joeyates.info/api/media/file/gnu-screen-showing-current-git-branch.png" alt="Screen Status Line Showing Git Branch" width="682" height="306"><div class="mt-1 text-sm text-gray-500 text-center">Screen Status Line Showing Git Branch</div></div><h1>Conclusion</h1><p>This system is not perfect as the shell only notifies screen of its directory when a new prompt is created.</p><p>The result is that if you switch screens, the status line doesn't get updated until after you issue a command.</p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/a-ruby-sunrise-and-sunset-time-calculator/">← Newer</a></li>
+<li>
+
+<a href="/posts/i18n-internationalization-without-rails/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2010</p>
+</div></footer>
+</div></body></html>

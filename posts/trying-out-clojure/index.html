@@ -1,0 +1,88 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Trying out Clojure - Joe Yates' Blog</title>
+<meta content="Clojure is a new JVM-based LISP" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+Trying out Clojure</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2010/02/09</div>
+</div>
+<h2 class="text-lg">
+Clojure is a new JVM-based LISP
+</h2>
+<h1>Dependencies and Java configuration</h1><p>1. Java</p><p>Check you have Sun Java installed:</p><pre title="language: shell"><code class="language-shell">$ java -version
+java version "1.6.0_16"
+Java(TM) SE Runtime Environment (build 1.6.0_16-b01)
+Java HotSpot(TM) Server VM (build 14.2-b01, mixed mode)</code></pre><p>If you see 'OpenJDK', you are using GNU Java: GCJ. It's better to switch to Sun Java.</p><p>2. libjline</p><p>On Ubuntu:</p><pre title="language: shell"><code class="language-shell">$ sudo apt-get install libjline-java libjline-java-doc</code></pre><p>3. Clojure</p><p>Clojure is under quite rapid development still, so it's better to clone the git repository and compile it:</p><pre title="language: shell"><code class="language-shell">$ cd /usr/share
+$ sudo git clone git://github.com/richhickey/clojure.git
+$ cd /usr/share/clojure</code></pre><p>The 'ant' package is needed for compilation.</p><pre title="language: shell"><code class="language-shell">$ sudo apt-get --no-install-recommends install ant ant-optional</code></pre><p>The parameter <code>--no-install-recommends</code> avoids the installation of GCJ.</p><pre title="language: shell"><code class="language-shell">$ sudo ant
+$ cd /usr/share/java
+$ sudo ln -s /usr/share/clojure/clojure.jar</code></pre><p>4. Check it works</p><pre title="language: shell"><code class="language-shell">$ java -cp /usr/share/java/clojure.jar clojure.main -e '(str "Hello World!")'
+"Hello World!"</code></pre><p>5. REPL</p><p>The best way to start using Clojure is via the REPL:</p><pre title="language: shell"><code class="language-shell">$ java -cp /usr/share/java/clojure.jar:/usr/share/java/jline.jar jline.ConsoleRunner clojure.main
+user=> (defn say-hello [] (str "Hello World!"))
+#'user/say-hello
+user=> (say-hello)
+"Hello world!"
+user=> [Ctrl+D]</code></pre><h1>Startup script</h1><p>The following script was adapted from <a href="https://web.archive.org/web/20101128071652/http://paulbarry.com/articles/2007/12/22/getting-started-with-clojure" target="_blank">here</a>.</p><p>Create it as 'clj' in a directory in your PATH:</p><div class="text-sm text-gray-500 mb-0">~/binclj:</div><pre title="language: shell"><code class="language-shell">#!/bin/bash
+
+CLOJURE=/usr/share/java/clojure.jar
+JLINE=/usr/share/java/jline.jar
+
+for i in $CLOJURE $JLINE do
+  if [ ! -e "$i"  ]; then
+    echo "File not found: $i"
+    exit 1
+  fi
+done
+
+if [ -z "$1" ]; then
+  java -cp $CLOJURE:$JLINE jline.ConsoleRunner clojure.main
+else
+  CLASS=$1
+  shift
+  java -cp $CLOJURE clojure.lang.Script $CLASS -- $*
+fi</code></pre><p>Remember to make it executable.</p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/shared-git-repositories/">← Newer</a></li>
+<li>
+
+<a href="/posts/managing-multiple-gnu-screen-sessions/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2010</p>
+</div></footer>
+</div></body></html>

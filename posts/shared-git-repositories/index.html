@@ -1,0 +1,64 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Shared Git Repositories - Joe Yates' Blog</title>
+<meta content="How to set up your own Git repository" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+Shared Git Repositories</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2010/02/21</div>
+</div>
+<h2 class="text-lg">
+How to set up your own Git repository
+</h2>
+<p>When you want to have a central shared git repository to push commits to, there are two common configurations:</p><ol start="1"><li>Everybody uses the same user for commits - easy to set up, but very messy,</li><li>Create a system user for each committer, create a system group for each project and add users to relevant groups.</li></ol><p>Below is an explanation of how to set up and manage configuration 2.</p><h1>Create User 'git'</h1><p>Create a 'user 'git' to manage projects.</p><pre title="language: shell"><code class="language-shell">$ sudo useradd --shell /bin/bash --home-dir /var/git --create-home git</code></pre><h1>A Directory for Repositories</h1><pre title="language: shell"><code class="language-shell">$ sudo su - git
+$ mkdir /var/git/repositories</code></pre><h1>Create a Project</h1><pre title="language: shell"><code class="language-shell">$ cd /var/git/repositories
+$ mkdir [PROJECT_NAME]
+$ cd [PROJECT_NAME]
+$ git --bare init</code></pre><p>Create a group for the project:</p><pre title="language: shell"><code class="language-shell">$ sudo groupadd [PROJECT_NAME]</code></pre><p>Add relevant users to the group:</p><pre title="language: shell"><code class="language-shell">$ sudo usermod --append --groups [GROUP_NAME] [USER_NAME]</code></pre><p>Give the group write permissions to the repository:</p><pre title="language: shell"><code class="language-shell">$ sudo chgrp -R [GROUP_NAME] /var/git/repositories/[REPOSITORY_PATH]
+$ sudo chmod -R ug+w /var/git/repositories/[REPOSITORY_PATH]
+$ chmod -R o-w /var/git/repositories/[REPOSITORY_PATH]</code></pre><h1>Have Git Handle Group Permissions</h1><div class="text-sm text-gray-500 mb-0">.git/config:</div><pre title="language: shell"><code class="language-shell">[core]
+  sharedrepository = 1</code></pre><h1>Use</h1><p>Now, when you use the remote shared repository, you can use your personal account:</p><pre title="language: shell"><code class="language-shell">$ git clone ssh://my-user@example.com/path/to/repo</code></pre><p></p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/setting-up-postgis/">← Newer</a></li>
+<li>
+
+<a href="/posts/trying-out-clojure/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2010</p>
+</div></footer>
+</div></body></html>

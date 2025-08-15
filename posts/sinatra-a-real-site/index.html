@@ -1,0 +1,82 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Sinatra: A Real Site - Joe Yates' Blog</title>
+<meta content="A start to finish description of setting up a site with Sinatra" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+Sinatra: A Real Site</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2010/05/31</div>
+</div>
+<h2 class="text-lg">
+A start to finish description of setting up a site with Sinatra
+</h2>
+<div class="flex flex-col items-center not-prose"><img src="https://blog-cms.joeyates.info/api/media/file/sidcom.png" alt="sidcom.me.uk" width="802" height="443"><div class="mt-1 text-sm text-gray-500 text-center">sidcom.me.uk</div></div><h1>The Site</h1><p>I have a young relative who draws a lot of comic strips, and thinking it would be nice if he could publish them, I looked around for an Open Source system.</p><p>I wanted something that was as near to XKCD as possible - latest comic, next/previous and random.</p><p>Not finding anything that was both pretty and ultra-simple, I decided to write my own.</p><p>The version for my relative is <a href="http://web.archive.org/web/20120611030706/http://sidcom.me.uk/" target="_blank">here</a> - the system will be up on GitHub as soon as I finish making it configurable.</p><h1>Technologies</h1><h2>Web Framework</h2><p>If you've read the title of this post, you won't be surprised to read that I chose <a href="https://sinatrarb.com/" target="_blank">Sinatra</a>.</p><h2>Database</h2><p>I decided to use <a href="https://web.archive.org/web/20100521085543/http://datamapper.org/" target="_blank">DataMapper</a> as the ORM.</p><p>I'm also using SQLite for both development and production.</p><h2>HTML and CSS</h2><p>As will be clear from the example site, I didn't work overhard on making a fresh graphic look - all I did was strip out a lot of HTML that was there to make rounded corners, and replaced it with Mozilla and WebKit specific rounding.</p><p>I then translated the HTML into <a href="https://web.archive.org/web/20100414033729/http://haml-lang.com/" target="_blank">HAML</a> and the CSS into <a href="https://sass-lang.com/" target="_self">SASS</a>.</p><h1>Development</h1><p>Documentation for Sinatra, DataMapper, HAML and SASS is quite good, so things went quite smoothly.</p><p>What follows is a list of the phases I went through while developing (on Ubuntu), and especially the bits I had trouble with.</p><h1>DataMapper</h1><h2>Installation</h2><pre title="language: shell"><code class="language-shell">$ sudo gem install dm-core
+$ sudo gem install data_objects
+$ sudo gem install data_mapper
+$ sudo gem install do_sqlite3</code></pre><h2>Using DataMapper in Code</h2><pre title="language: ruby"><code class="language-ruby">require 'dm-core'
+require 'data_mapper'
+
+DataMapper.setup({
+  :adapter => 'sqlite3',
+  :host => 'localhost',
+  :username => '',
+  :password => '',
+  :database => 'db/sidcom_development'
+})
+
+class Comic
+  include DataMapper::Resource
+
+  property :title, :text
+  property :permalink, :text
+  property :created_at, :datetime
+  property :updated_at, :datetime
+end
+
+Comic.auto_upgrade!</code></pre><p>The <code>Comic.auto_upgrade!</code> bit handles migrations - at startup, table columns are adjusted to match the declaration in the equivalent class.</p><h1>Rack Authentication</h1><p>This application has a 'public' and an 'admin' area, so I actually created two Sinatra Apps, wrapping one in <a href="https://web.archive.org/web/20100412134219/http://rack.rubyforge.org/doc/Rack/Auth/Digest/MD5.html" target="_blank">Rack::Auth::Digest::MD5</a>.</p><p>A local settings file holds user names and hashed (kinda salted) passwords.</p><h1>Sinatra</h1><p>Sinatra apps have access to a number of <a href="https://www.rubydoc.info/gems/sinatra/Sinatra/Base" target="_blank">globals</a>, I used:</p><ul><li><a href="https://web.archive.org/web/20100429212457/http://rack.rubyforge.org/doc/classes/Rack/Request.html" target="_blank">request</a>,</li><li>params</li></ul><h2>Helpers</h2><p>This app being a little more complex than my first, I decided to implement some Rails-like helpers.</p><p>The most important helper is <code>url_for</code>.</p><p>Sinatra - by design - includes routing in the structure of an app, so it cannot provide pre-cooked methods of the sort.</p><h1>HAML</h1><p>I found HAML very easy to start using, what I didn't immediately understand was:</p><ul><li>how to interpolate variables,</li><li>how to call functions,</li><li>and how to include partials.</li></ul><p>These are actually all the same problem, but it took me a while to realize that!</p><p>In HAML, you can interpolate the Ruby way (with <code>#{...}</code>) or the HAML way (with <code>=</code>).</p><h2>Variable Interpolation</h2><p>Just use Ruby String interpolation:</p><pre title="language: shell"><code class="language-shell">%h1 Hello #{ @name }!</code></pre><h2>Calling Functions</h2><p>Use HAML evaluation syntax:</p><pre title="language: plaintext"><code class="language-plaintext">%h1
+= @name
+!</code></pre><h2>HAML partials</h2><p>Again, these can be evaluated as above:</p><pre title="language: ruby"><code class="language-ruby">= haml(:_my_partial, :layout => false)</code></pre><h1>Generating CSS from SASS</h1><p>I chose to keep my SCSS files in a subdirectory under my views directory, and generate CSS from them under the static path.</p><p>During development, you need to keep the static versions up to date, and to do so, you just need to keep a process running as follows:</p><pre title="language: shell"><code class="language-shell">$ sass --watch views/stylesheets:static/stylesheets</code></pre><h1>Conclusion</h1><p>Sinatra handles small sites very well.</p><p>The code can be kept DRY, and if you decide to, Sinatra projects can be quite easily transformed into Rails projects.</p><p></p><p>Actually, I have doubts whether it was worth doing this project in Sinatra -</p><p>a stripped-down Rails 3 project would have been just as lightweight and easy to develop.</p><p>But, then again, it's useful to run a system through its paces, to have an idea what areas it can usefully be applied to.</p><p></p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/use-g-as-an-alias-for-git-without-losing-autocompletion/">← Newer</a></li>
+<li>
+
+<a href="/posts/googletest-hello-world/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2010</p>
+</div></footer>
+</div></body></html>

@@ -1,0 +1,104 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Callbacks in Objective-C - Joe Yates' Blog</title>
+<meta content="How to pass one Objective-C function to another function and have the second function call the first!" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+Callbacks in Objective-C</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2010/01/30</div>
+</div>
+<h2 class="text-lg">
+How to pass one Objective-C function to another function and have the second function call the first!
+</h2>
+<p>I've been learning Objective-C and was implementing a regular expression library on top of libpcre. I wanted to add a way of accepting a user-defined function in replace operations, similar to Ruby's <code>String.gsub()</code> or Perl <code>s///e</code>.</p><p>I realized that I needed to handle callbacks, but in Objective-C, you're not supposed to play with function pointers.</p><p>In C or C++ the pattern is very common, but I was initially stumped when I had to implement the same pattern in Objective-C. All the search results I got seemed to say you couldn't do it.</p><h1>The C Way</h1><p>In C you pass the callback function as a function pointer:</p><pre title="language: cpp"><code class="language-cpp">#include &lt;stdio.h>
+#include &lt;string.h>
+
+void caller(void (* callback)(const char *))
+{
+  printf("'caller' invoking callback\n");
+  callback("Hello C");
+}
+
+void my_callback(const char * sz)
+{
+  printf("'my_callback' called with greeting '%s'\n", sz);
+}
+
+int main()
+{
+  caller(my_callback);
+  return 0;
+}</code></pre><p>Which results in:</p><pre title="language: shell"><code class="language-shell">$ ./callback
+'caller' invoking callback
+'my_callback' called with greeting 'Hello C'</code></pre><h1>Selector From String</h1><p>In Objective-C you don't actually call methods. You send messages to objects, and the Objective-C runtime invokes the correct method by matching the message signature with available selectors for that object.</p><p>What follows is GNUStep-specific, but should work with Apple's Objective-C method <code>NSSelectorFromString</code>.</p><h1>An Objective-C Equivalent</h1><p>Here's the object we want to call back to, it has a method which takes one parameter:</p><pre title="language: objectivec"><code class="language-objectivec">@interface Responder : NSObject
+  - (id) my_callback: (NSString *) sGreeting;
+@end
+
+@implementation Responder
+- (id) my_callback: (NSString *) sGreeting
+{
+  printf("'Responder.my_callback' called with greeting: '%s'.\n", [sGreeting cString]);
+}
+@end</code></pre><p>Here's the calling code.</p><pre title="language: objectivec"><code class="language-objectivec">@interface Caller : NSObject
++ (void) call: (id) obj method: (const char *) szMethod;
+@end
+
+@implementation Caller
++ (void) call: (id) obj method: (const char *) szMethod
+{
+  SEL sel = GSSelectorFromName(szMethod);
+  printf("Caller invoking method '%s'\n", szMethod);
+  [obj performSelector: sel withObject: @"Hello Objective-C"];
+}
+@end</code></pre><p>The name of the method we want to call is <code>my_callback:</code> - note the <code>:</code>.</p><pre title="language: objectivec"><code class="language-objectivec">int main(void)
+{
+  Responder * res = [[Responder alloc] init];
+  [Caller call: res method: "my_callback:"];
+  [res dealloc];
+}</code></pre><p>The result of all this is:</p><pre title="language: shell"><code class="language-shell">$ ./callback
+Caller invoking method 'my_callback:'
+'Responder.my_callback' called with greeting: 'Hello Objective-C'.</code></pre><h1>Conclusion</h1><p>This seems rather long-winded, but in the end most of the extra lines of code here relate to the fact we're using objects, not plain functions as we do in C.</p><p>The next step would be to benchmark this to get an idea how much time the Objective-C runtime takes to do the method lookup with <code>GSSelectorFromName</code> and to carry out the call.</p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/regular-expressions-in-sqlite-with-ruby/">← Newer</a></li>
+<li>
+
+<a class="disabled">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2010</p>
+</div></footer>
+</div></body></html>

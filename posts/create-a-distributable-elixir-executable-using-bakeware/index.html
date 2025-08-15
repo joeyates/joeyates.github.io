@@ -1,0 +1,179 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Create a distributable Elixir executable using Bakeware - Joe Yates' Blog</title>
+<meta content="Use the Bakeware library to create an application that will run on various Linux versions" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+Create a distributable Elixir executable using Bakeware</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2023/11/24</div>
+</div>
+<h2 class="text-lg">
+Use the Bakeware library to create an application that will run on various Linux versions
+</h2>
+<p>What follows is a step-by-step guide to set up an Elixir project so that it produces an executable that can be distributed. The executables will run on other Linux machines with the same processor architecture.</p><p>We will be using <a href="https://hex.pm/packages/bakeware" target="_blank">Bakeware</a>.</p><h2>The Project</h2><p>I've created an example project</p><pre title="language: shell"><code class="language-shell">mix help bakeware_example</code></pre><p>It's <a href="https://github.com/joeyates/bakeware_example" target="_blank">here on GitHub</a>.</p><h2>Add the Dependency</h2><p>Add the following to <code>mix.exs</code></p><pre title="language: elixir"><code class="language-elixir">defp deps do
+  [
+    ...
+    {:bakeware, runtime: false}
+  ]
+end</code></pre><p>We set `runtime: false` as the dependency is not part of the runtime application (See <a href="https://hexdocs.pm/mix/Mix.Tasks.Deps.html#module-dependency-definition-options" target="_blank">the Mix doc for a full explanation</a>).</p><p>Update dependencies</p><pre title="language: shell"><code class="language-shell">mix deps.get</code></pre><h2>Configure the Release</h2><p>Add release details to mix.exs:</p><pre title="language: elixir"><code class="language-elixir">  @app :bakeware_example
+
+  def project do
+    [
+      app: @app,
+      releases: [{@app, release()}],
+      preferred_cli_env: [
+        release: :prod
+      ]
+      ...
+    ]
+  end
+
+...
+
+  defp release do
+    [
+      overwrite: true,
+      quiet: true,
+      steps: [:assemble, &Bakeware.assemble/1],
+      strip_beams: Mix.env() == :prod
+    ]
+  end</code></pre><h2>Create the First Release</h2><p>We can now create a first executable to see where we're at</p><pre title="language: shell"><code class="language-shell">$ MIX_ENV=prod mix release
+...
+Bakeware successfully assembled executable at:
+
+    _build/prod/rel/bakeware/bakeware_example
+</code></pre><p>Running the executable works, but doesn't produce any output</p><pre title="language: shell"><code class="language-shell">$ _build/dev/rel/bakeware/bakeware_example
+$</code></pre><h1>Implement <code>main</code></h1><p>We need to implement a function that will get called when the application starts.</p><p>Create lib/bakeware_example/cli.ex</p><div class="text-sm text-gray-500 mb-0">lib/bakeware_example/cli.ex:</div><pre title="language: elixir"><code class="language-elixir">defmodule BakewareExample.CLI do
+  use Bakeware.Script
+
+  @impl Bakeware.Script
+  def main(_args) do
+    IO.puts "bakeware_example works!"
+    0
+  end
+end</code></pre><p>Configure that as the startup module in mix.exs</p><pre title="language: elixir"><code class="language-elixir">--- mix.exs
++++ mix.exs
+@@ -16,7 +16,8 @@ def project do
+ 
+   def application do
+     [
+-      extra_applications: [:logger]
++      extra_applications: [:logger],
++      mod: {BakewareExample.CLI, []}
+     ]
+   end</code></pre><p>Now when be rebuild and run, we get some output</p><pre title="language: shell"><code class="language-shell">$ MIX_ENV=prod mix release
+...
+$ _build/dev/rel/bakeware/bakeware_example
+bakeware_example works!</code></pre><h2>We're not Finished!</h2><p>Now, if I copy that executable onto a computer with a recent Linux distribution, it will work.</p><p>But, if the distribution is a bit older, it fails:</p><pre title="language: shell"><code class="language-shell">$ ./bakeware_example 
+./bakeware_example: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.34' not found (required by ./bakeware_example)</code></pre><p>The problem is that our executable relies on a more recent version of glibc.</p><p>The solution, <a href="https://github.com/bake-bake-bake/bakeware#creating-cross-platform-binaries" target="_blank">as explained in the Bakeware README</a> is to build with an older version of glibc.</p><h2>A Containerized Build</h2><p>So, let's use a slightly older Linux version in a container to build the executable.</p><p>What follows uses <a href="https://podman.io/" target="_blank">Podman</a> but should work exactly the same with Docker.</p><div class="text-sm text-gray-500 mb-0">Dockerfile:</div><pre title="language: dockerfile"><code class="language-dockerfile"># Build releases with a recent Elixir, but using an older Linux
+# so the executable depends on an older
+# (and more widely available) GLibC version.
+
+FROM debian:buster-slim
+
+# Installing the dependency packages takes 90% of the time
+# so we do it first to allow quick builds of images
+# with varied options.
+
+RUN \
+  apt-get update && \
+  apt-get install -y curl libncurses5 procps build-essential zstd unzip locales
+
+# Set up workspace
+WORKDIR /app
+
+# Environment for Erlang
+ENV ERLANG_URL=https://packages.erlang-solutions.com/erlang/debian/pool
+ENV ERTS_RELEASE=24.3.3-1
+ENV ERTS_PLATFORM=debian~buster_amd64
+ENV PACKAGE=$ERTS_RELEASE~$ERTS_PLATFORM.deb
+
+# Environment for Elixir
+ARG ELIXIR_VERSION
+ENV ELIXIR_VERSION=$ELIXIR_VERSION
+ENV ELIXIR_ZIP=v$ELIXIR_VERSION-otp-24.zip
+ENV PATH="${PATH}:/app/elixir/bin"
+ENV LC_ALL=en_US.UTF-8
+
+# Set up Erlang and Elixir
+RUN \
+  curl -O $ERLANG_URL/erlang-base_$PACKAGE && \
+  curl -O $ERLANG_URL/erlang-ssl_$PACKAGE && \
+  curl -O $ERLANG_URL/erlang-crypto_$PACKAGE && \
+  curl -O $ERLANG_URL/erlang-public-key_$PACKAGE && \
+  curl -O $ERLANG_URL/erlang-asn1_$PACKAGE && \
+  curl -O $ERLANG_URL/erlang-syntax-tools_$PACKAGE && \
+  curl -O $ERLANG_URL/erlang-inets_$PACKAGE && \
+  curl -O $ERLANG_URL/erlang-mnesia_$PACKAGE && \
+  curl -O $ERLANG_URL/erlang-runtime-tools_$PACKAGE && \
+  dpkg -i *.deb && \
+  echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+  locale-gen && \
+  mkdir elixir && \
+  curl --output elixir/$ELIXIR_ZIP https://repo.hex.pm/builds/elixir/$ELIXIR_ZIP && \
+  (cd elixir; unzip $ELIXIR_ZIP) && \
+  mix local.hex --force && \
+  mix local.rebar --force
+
+# Install Elixir Dependencies
+COPY ../mix.* /app/
+RUN mix deps.get
+
+COPY ../lib /app/lib/</code></pre><p>We've kept the <code>ELIXIR_VERSION</code> as a build argument, so we can make it match the project more easily.</p><pre title="language: shell"><code class="language-shell">$ podman build --file Containerfile --env ELIXIR_VERSION=1.15.5 --tag bakeware_example:latest .
+...
+Successfully tagged localhost/bakeware_example:latest
+$ podman run -v `pwd`:/app/_build/prod/rel/bakeware -e MIX_ENV=prod bakeware_example:latest mix release
+...
+Bakeware successfully assembled executable at:
+
+    _build/prod/rel/bakeware/bakeware_example</code></pre><p>Because we set up a volume <code>pwd:/app/_build/prod/rel/bakeware</code> the executable is actually build in the project root.</p><h2>It Works!</h2><p>Running it locally works</p><pre title="language: shell"><code class="language-shell">> uname -a
+Linux framework 5.19.0-43-generic #44~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Mon May 22 13:39:36 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+> ./bakeware_example 
+bakeware_example works!</code></pre><p>As does running it on an older machine</p><pre title="language: shell"><code class="language-shell">> uname -a
+Linux foobar 5.4.0-107-generic #121-Ubuntu SMP Thu Mar 24 16:04:27 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+> ./bakeware_example 
+bakeware_example works!</code></pre><p>🎉</p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/checking-yard-documentation-coverage/">← Newer</a></li>
+<li>
+
+<a href="/posts/back-up-gmail-accounts-with-imap-backup-using-email-oauth2-proxy/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2023</p>
+</div></footer>
+</div></body></html>

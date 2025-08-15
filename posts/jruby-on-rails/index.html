@@ -1,0 +1,68 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>JRuby on Rails - Joe Yates' Blog</title>
+<meta content="Running Rails on top of JRuby" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+JRuby on Rails</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2010/02/22</div>
+</div>
+<h2 class="text-lg">
+Running Rails on top of JRuby
+</h2>
+<h1>Which Java Version?</h1><p>JRuby is normally run on the "official" Sun (now Oracle) Java. Some people seem to be able to get it to run on GNU Java (GCJ), but I suggest sticking with Sun Java to get you started.</p><h1>Which Type of Installation?</h1><p>First of all you should decide where to install JRuby - do you want to install it for all system users or just for your own user?</p><h1>Download</h1><p>Download the latest JRuby from <a href="http://jruby.org/download" target="_blank">http://jruby.org/download</a>.</p><pre title="language: shell"><code class="language-shell">$ wget http://jruby.kenai.com/downloads/1.4.0/jruby-bin-1.4.0.tar.gz
+$ tar -xkzf jruby-bin-1.4.0.tar.gz</code></pre><h2>Personal Installation</h2><pre title="language: shell"><code class="language-shell">$ cd ~/bin
+$ cp -r ../jruby-1.4.0 .</code></pre><p>Make a symlink to simplify things in the future when we upgrade to a new version:</p><pre title="language: shell"><code class="language-shell">$ ln -s jruby-1.4.0 jruby</code></pre><p>Add the following line to your ~/.bashrc to add JRuby executables to your %PATH:</p><div class="text-sm text-gray-500 mb-0">~/.bashrc:</div><pre title="language: shell"><code class="language-shell">export PATH=~/bin/jruby/bin:$PATH</code></pre><h2>System-wide Installation</h2><pre title="language: shell"><code class="language-shell">$ sudo cp jruby-1.4.0 /usr/local/lib
+$ sudo ln -s /usr/local/lib/jruby-1.4.0 /usr/local/lib/jruby</code></pre><h1>Gems</h1><p>List installed gems:</p><pre title="language: shell"><code class="language-shell">$ jruby -S gem list</code></pre><p>Install a gem (in a personal installation):</p><pre title="language: shell"><code class="language-shell">$ jruby -S gem install rails</code></pre><p>Install a gem (in a system-wide installation):</p><pre title="language: shell"><code class="language-shell">$ sudo /usr/local/lib/jruby/bin/jruby -S gem install rails</code></pre><h1>Modifying your Rails Project</h1><p>You need to look at the list of dependencies of your project, principally the gems, and make sure they are available for JRuby.</p><p>Gems written in pure Ruby work 'out of the box' with JRuby. But you'll need to find replacements for gems which are written in whole or in part in C.</p><p>One example of this is RMagick (the Ruby interface to the ImageMagick/GraphicsMagick packages). Ruby on Rails which run on MRI Ruby and use RMagick will have to use RMagick4J under JRuby.</p><p>If your Ruby on Rails application has no gem dependency problems, you should be able to run it by changing the name of the database adapter in <code>config/database.yml</code>:</p><div class="text-sm text-gray-500 mb-0">config/database.yml:</div><pre title="language: ruby"><code class="language-ruby">&lt;% if RUBY_PLATFORM =~ /java/ %>
+development:
+  adapter: jdbcsqlite3
+  database: db/development.db
+&lt;% else %>
+development:
+  adapter: sqlite3
+  dbfile: db/development.db
+&lt;% end %></code></pre><p>Here I have made use of the fact that Rails runs <code>config/database.yml</code> through ERB before loading it.</p><p>Once the database adapter setting has changed, you should be able to run</p><pre title="language: shell"><code class="language-shell">$ ./script/server</code></pre><p>Packaging your application for a servlet container can be done with the <a href="http://rubygems.org/gems/warbler" target="_blank">warbler gem</a>.</p><p></p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/i18n-internationalization-without-rails/">← Newer</a></li>
+<li>
+
+<a href="/posts/debian-alternatives/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2010</p>
+</div></footer>
+</div></body></html>

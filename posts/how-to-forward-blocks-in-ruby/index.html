@@ -1,0 +1,124 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>How to forward blocks in Ruby - Joe Yates' Blog</title>
+<meta content="In Ruby, how do you receive a block and pass it on to another function?" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+How to forward blocks in Ruby</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2014/06/30</div>
+</div>
+<h2 class="text-lg">
+In Ruby, how do you receive a block and pass it on to another function?
+</h2>
+<h1>TL;DR</h1><p>Use <code>Proc.new</code></p><h1>Calling Enumerators - normal use</h1><p>You're writing some code which calls an Enumerator - a function that makes repeated calls to the block of code that you provide.</p><pre title="language: ruby"><code class="language-ruby">def yield_me_2_things
+  yield 'Thing 1'
+  yield 'Thing 2'
+end
+
+yield_me_2_things { |x| puts x }</code></pre><p>This will print:</p><pre title="language: shell"><code class="language-shell">Thing 1
+Thing 2</code></pre><p>The values are supplied by <code>yield_me_2_things</code> and the printing is done in the block, <code>{ |x| puts }</code>, that is passed to that method.</p><h1>Generalize</h1><p>I can now make a generalized method, to handle any number of things:</p><pre title="language: ruby"><code class="language-ruby">def yield_me_n_things(n)
+  1.upto(n) do |i|
+    thing = "Thing #{i}"
+    yield thing
+  end
+end
+
+yield_me_n_things(2) { |x| puts x }</code></pre><p>...the output is the same.</p><h1>An alternative: use a block</h1><p>I could equally have implemented the method using a `&block` parameter - for the caller, it makes no difference:</p><p></p><pre title="language: ruby"><code class="language-ruby">def call_this_block_with_n_things(n, &block)
+  1.upto(n) do |i|
+    thing = "Thing #{i}"
+    block.call thing
+  end
+end
+
+call_this_block_with_n_things(2) { |x| puts x }</code></pre><p>...the output is the same.</p><h1>The problem</h1><p>What if I want one Enumerator to call another?</p><p>What if I want to keep the specific version (<code>yield_me_2_things</code>) but just make it call the generalized method?</p><pre title="language: ruby"><code class="language-ruby">def enumerate_n_things(n) # How do I receive the block?
+  1.upto(n) do |i|
+    thing = "Thing #{i}"
+    # How do I call the block?
+  end
+end
+
+def enumerate_2_things
+  enumerate_n_things(2) # How do I forward the block?
+end
+
+enumerate_2_things { |x| puts x }
+enumerate_n_things(2) { |x| puts x }</code></pre><p>How should I write the two methods, while keeping both usable independently?</p><h1>Attempt 1: Forward using yield</h1><p>With `yield`, you don't explicitly receive the block, you just call it.</p><p>Does that work across two levels? I.e., does the block get passed to method I call?</p><pre title="language: ruby"><code class="language-ruby">def enumerate_n_things(n)
+  1.upto(n) do |i|
+    thing = "Thing #{i}"
+    yield thing
+  end
+end
+
+def enumerate_2_things
+  enumerate_n_things(2)
+end
+
+enumerate_2_things { |x| puts x }</code></pre><p>No, doesn't work, <code>enumerate_n_things</code> doesn't receive a block.</p><p>I get this error:</p><pre title="language: shell"><code class="language-shell">no block given (yield) (LocalJumpError)</code></pre><h1>Attempt 2: Forward using a block</h1><pre title="language: ruby"><code class="language-ruby">def enumerate_n_things(n, block) # Note: no '&'
+  1.upto(n) do |i|
+    thing = "Thing #{i}"
+    block.call thing
+  end
+end
+
+def enumerate_2_things(&block)
+  enumerate_n_things(2, block)
+end
+
+enumerate_2_things { |x| puts x }</code></pre><p>Prints:</p><pre title="language: shell"><code class="language-shell">Thing 1
+Thing 2</code></pre><p></p><p>But we can no longer pass a block to the generalized method:</p><pre title="language: ruby"><code class="language-ruby">enumerate_n_things(2) { |x| puts x }</code></pre><p><code>enumerate_n_things</code> now expects the block as a normal parameter.</p><p>I get this error:</p><pre title="language: shell"><code class="language-shell">wrong number of arguments (1 for 2)</code></pre><h1>Solution: Proc.new</h1><pre title="language: ruby"><code class="language-ruby">def enumerate_n_things(n, block = Proc.new)
+  1.upto(n) do |i|
+    thing = "Thing #{i}"
+    block.call thing
+  end
+end
+
+def enumerate_2_things(block = Proc.new)
+  enumerate_n_things(2, block)
+end
+
+enumerate_2_things { |x| puts x }
+enumerate_n_things(2) { |x| puts x }</code></pre><p>Both calls now work!</p><p><code>Proc.new</code> transforms any block passed to a method into a <code>Proc</code>.</p><p>If we use that as the default value for a block parameter we can call methods directly with blocks, or forward blocks between enumerators.</p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/create-a-mix-task-for-an-elixir-project/">← Newer</a></li>
+<li>
+
+<a href="/posts/instant-sinatra-starter/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2014</p>
+</div></footer>
+</div></body></html>

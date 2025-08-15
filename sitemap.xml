@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+          <url>
+            <loc>https://joeyates.info/categories/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/categories/2/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/2/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/3/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/4/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/enforce-proper-direnv-setup/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/create-a-payloadcms-custom-slug-field/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/checking-yard-documentation-coverage/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/create-a-distributable-elixir-executable-using-bakeware/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/back-up-gmail-accounts-with-imap-backup-using-email-oauth2-proxy/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/connecting-to-a-running-phoenix-application-deployed-on-dokku/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/achieving-a-30x-improvement-in-imap-backup-times/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/dockerfile-entrypoint-cmd-and-run-arguments/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/dotfiles/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/trying-flow/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/create-a-mix-task-for-an-elixir-project/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/how-to-forward-blocks-in-ruby/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/instant-sinatra-starter/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/my-everyday-find-command/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/ruby-bareword-assignment-and-method-calls-with-implicit-self/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/html-history-api/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/overriding-the-insertion-operator-for-c-template-classes/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/hello-gosu/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/rake-builder/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/use-g-as-an-alias-for-git-without-losing-autocompletion/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/sinatra-a-real-site/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/googletest-hello-world/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/object-representation-in-c-plus-plus/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/cuil-fail/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/a-beginner-s-sinatra-tutorial/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/a-rails-programmer-s-first-django-application/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/editing-javascript-in-emacs/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/a-ruby-sunrise-and-sunset-time-calculator/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/show-your-git-branch-name-in-your-gnu-screen-status-line/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/i18n-internationalization-without-rails/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/jruby-on-rails/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/debian-alternatives/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/handling-multiple-versions-of-ruby/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/setting-up-postgis/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/shared-git-repositories/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/trying-out-clojure/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/managing-multiple-gnu-screen-sessions/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/regular-expressions-in-sqlite-with-ruby/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        
+          <url>
+            <loc>https://joeyates.info/posts/callbacks-in-objective-c/</loc>
+            <lastmod>2025-08-15T06:30:27.084825Z</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.5</priority>
+          </url>
+        </urlset>

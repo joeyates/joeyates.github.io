@@ -1,0 +1,220 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Create a PayloadCMS Custom Slug Field - Joe Yates' Blog</title>
+<meta content="A walkthrough of how to create a plugin for PayloadCMS (version 3.x)" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+Create a PayloadCMS Custom Slug Field</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2025/07/24</div>
+</div>
+<h2 class="text-lg">
+A walkthrough of how to create a plugin for PayloadCMS (version 3.x)
+</h2>
+<p>I'm using <a href="https://payloadcms.com/" target="_blank">PayloadCMS</a> for this blog. When I create a post, I usually want it to have a <a href="https://developer.mozilla.org/en-US/docs/Glossary/Slug" target="_blank">slug</a> that matches the post's title.</p><p>For example, for this article, where the title is 'Create a PayloadCMS Custom Slug Field', the slug should be 'create-a-payloadcms-custom-slug-field'.</p><p>I thought that this would be a perfect fit for a <a href="https://payloadcms.com/docs/fields/overview#custom-components" target="_blank">custom field</a>.</p><p>Here's the things that I wanted:</p><ul><li>set a text field's admin edit component,</li><li>indicate the <code>source</code> field for the component,</li><li>have that component watch for changes to the source,</li><li>generate a slug, replacing non-ASCII characters with '-',</li><li>allow the user to override this behaviour and create their own slug,</li><li>validate that the slug matches the desired pattern.</li></ul><p>BTW: I'm skipping testing here to keep the examples short.</p><h3>The Collection</h3><p>The <code>Post</code>collection:</p><div class="text-sm text-gray-500 mb-0">src/collections/Post.ts:</div><pre title="language: js"><code class="language-js">export const Post: CollectionConfig = {
+  fields: [
+    {      
+      name: 'title',
+      type: 'text',
+      required: true
+    },
+    {
+      name: 'slug',
+      type: 'text',
+      admin: {
+        components: {
+          Field: {
+            path: '/fields/SlugField',
+            clientProps: {
+              source: 'title'
+            }
+          }
+        }
+      },
+      required: true
+    },
+    ...
+  ]
+}</code></pre><p>Note that we add <code>clientProps</code>, with <code>source: 'title'</code>, which then gets passed to our component, so we know which field we are slugifying.</p><p>Also, we're only changing the behaviour of our field, not the underlying data structure, so it's still <code>type: 'text'</code>.</p><h3><code>path</code></h3><p>It's worth noting the value of <code>path</code> (<a href="https://payloadcms.com/docs/custom-components/overview#component-paths" target="_blank">see docs</a>).</p><p>The path you give should be relative to <code>baseDir</code> set in <code>src/payload.config.ts</code>, which is normally the <code>src</code> subdirectory.</p><p>We'll be creating <code>src/fields/SlugField.tsx</code>, so path is <code>/fields/SlugField</code>.</p><p>I found it strange at first as paths starting with <code>/</code> seem like they might be relative to project root.</p><p>But, as long as you remember that when payload is resolving the component path, the given path is prefixed with <code>src</code>, I suppose it makes sense.</p><h3>First Working Version</h3><p>I'll start with a minimal working version of the component. It just grabs the title field and sets its own value based on that, no validation, no errors, etc. Also it's in Javascript in order to skip the extra code entailed by Typescript.</p><div class="text-sm text-gray-500 mb-0">src/fields/SlugField.js:</div><pre title="language: jsx"><code class="language-jsx">'use client'
+
+import React, { useEffect } from 'react'
+import { TextInput, useField, useFormFields } from '@payloadcms/ui'
+
+const slugify = value =>
+  value
+    .toLocaleLowerCase()
+    .replace(/[^\-a-z0-9]/g, " ")
+    .trim()
+    .replace(/\s+/g, "-")
+
+const SlugField = props => {
+  const { source } = props
+  const sourceField = useFormFields(([fields]) => (fields && fields[source]))
+  const sourceValue = sourceField.value || ""
+ 
+  const field = useField()  
+  const { setValue, value } = field  
+
+  useEffect(() => {
+    if (!sourceValue) {
+      return
+    }
+    const slug = slugify(sourceValue)
+    setValue(slug)
+  }, [
+    setValue,
+    sourceValue
+  ])
+
+  return &lt;TextInput {...props} value={value} />
+}
+  
+export default SlugField</code></pre><p>The <code>source</code> value we passed to <code>clientProps</code> is passed in with the other props.</p><p>From that, we get the current value of the source field.</p><p>We then grab the current value of our Slug field itself.</p><p>We monitor when the source field's value changes via <code>useEffect</code>, and we slugify it and update our field.</p><p>The <code>slugify</code> function ensures we only end up with alphanumerics, plus <code>-</code>.</p><p>In the end we simply use Payload's <code>TextInput</code>.</p><h3>The Full Version</h3><pre title="language: tsx"><code class="language-tsx">'use client'
+
+import React, { ChangeEvent, useEffect, useState } from 'react'
+import { formatLabels } from 'payload/shared'
+import { FieldError, TextInput, type TextInputProps, useField, useFormFields } from '@payloadcms/ui'
+
+const slugify = (value: string) =>
+  value
+    .toLocaleLowerCase()
+    .replace(/[^\-a-z0-9]/g, " ")
+    .trim()
+    .replace(/\s+/g, "-")
+
+const isEmpty = (value: any) => value === null || value === undefined
+const isBlank = (value: string | null | undefined) => isEmpty(value) || value === ''
+
+interface ToLabelArgs {
+  path: string,
+  source: string,
+  managed: boolean
+}
+
+const toLabel = ({ path, source, managed }: ToLabelArgs) => {
+  const { singular } = formatLabels(path)
+  if (managed) {
+    const sourceLabel = formatLabels(source).singular
+    return `${singular} (generated from '${sourceLabel}' field)`
+  } else {
+    return singular
+  }
+}
+
+const validateSlug = (value: string | null) => {
+  if (isBlank(value)) {
+    return true
+  }
+  const slug = slugify(value as string)
+  if (slug !== value) {
+    return 'Slug must be lowercase, and can only contain letters, numbers and dashes'
+  }
+  return true
+}
+
+// `field` has been deprecated from the TextInputProps type, but it is the only
+// way to get the `required` flag.
+type DeprecatedFieldEntry = { required: boolean }
+// The TextInputProps type has dual handling of onChange based on the value of hasMany
+// If we accept both values, we are forced to have two rendering paths.
+type SlugFieldInputProps = TextInputProps & { hasMany: false, source: string, field: DeprecatedFieldEntry }
+
+const SlugField = (props: SlugFieldInputProps) => {
+  const { path, source, field: { required } } = props
+  const field = useField&lt;string>({ path, validate: validateSlug })
+  const { setValue, value, errorMessage } = field
+  const showError = !!errorMessage
+  const sourceField = useFormFields(([fields]) => (fields && fields[source]))
+  const sourceValue = sourceField.value as string
+  const slugifiedSourceValue = slugify(sourceValue || "")
+  // We only set the slug if the user has not set it, or if the slugified
+  // source value matches the current value.
+  const startManaged = isBlank(value) || slugifiedSourceValue === value
+  const [managed, setManaged] = useState(startManaged)
+  const label = toLabel({ path, source, managed })
+
+  useEffect(() => {
+    if (!managed) {
+      return
+    }
+
+    if (isBlank(sourceValue)) {
+      return
+    }
+
+    const slug = slugify(sourceValue)
+    setValue(slug)
+  }, [
+    managed,
+    setValue,
+    sourceValue,
+    value
+  ])
+
+  const handleChange = (event: ChangeEvent&lt;HTMLInputElement>) => {
+    const value = event.target.value
+    setManaged(isBlank(value))
+    setValue(value)
+  }
+  const { field: _field, source: _source, ...noSource } = props
+
+  const error = showError ? &lt;FieldError message={errorMessage} path={path} showError={true} /> : undefined
+
+  return (
+    &lt;TextInput
+      {...noSource}
+      label={label}
+      onChange={handleChange}
+      path={path}
+      required={required}
+      Error={error}
+      showError={showError}
+      value={value}
+    />
+  )
+}
+
+export default SlugField</code></pre><p>There's a number of changes here.</p><p>We want a label that says 'Slug', not 'slug', so we use Payload's <code>formatLabels</code>. But, we also want to show if the field is required.</p><p>We also want to indicate whether we're generating the field's value or leaving up to the user. For this, I introduced the concept of "managed". If the field starts empty, or if its existing value matches what the <code>slugify</code> function produces, then we link this field to the source field. If not, the user has chosen to go their own way, so we don't update the field's value with a slugified version of the source.</p><div class="flex flex-col items-center not-prose"><img src="https://blog-cms.joeyates.info/api/media/file/slug-field-in-managed-state.png" alt="The slug field in "managed" state" width="1004" height="511"><div class="mt-1 text-sm text-gray-500 text-center">The slug field in "managed" state</div></div><p>We reset <code>managed</code> to true if the user clears the field, that way, if they change their mind, they can get back to the managed version.</p><div class="flex flex-col items-center not-prose"><img src="https://blog-cms.joeyates.info/api/media/file/slug-field-in-unmanaged-state.png" alt="The slug field in "unmanaged" state" width="1004" height="511"><div class="mt-1 text-sm text-gray-500 text-center">The slug field in "unmanaged" state</div></div><p>Getting the value of <code>required</code> brings us to the next point. As this is now Typescript, the component's type is an extended version of <code>TextInputProps</code>, to which we add <code>source: string</code>. Apart from <code>source</code> the props' <code>field</code> is the only place where the component can get a handle on the <code>required</code> property. Unfortunately, <code>field</code> has been deprecated as part of <code>TextInputProps</code> so we have to hack things and add it back. I've been unable to find another way of getting hold of <code>required</code> for a field, so I'm wondering what the official way is.</p><h3>Conclusion</h3><p>This example mixes some general concerns about creating custom components in PayloadCMS with others that are more specific to the slug field itself.</p><p>When I was creating my slug field, it was very hard to find up-to-date information, especially as Payload 3 has changed a lot compared to Payload 2, so I ended up reading a lot of source code to work out how things are done. I hope that making this example available will help someone else to avoid all that pain!</p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/enforce-proper-direnv-setup/">← Newer</a></li>
+<li>
+
+<a href="/posts/checking-yard-documentation-coverage/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2025</p>
+</div></footer>
+</div></body></html>
