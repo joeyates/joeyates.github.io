@@ -137,7 +137,7 @@ defmodule Blog.CMS.Post do
     ]
   end
 
-  defp render_upload(%{type: "upload", value: value} = node, _options) do
+  defp render_upload(%{type: "upload", value: value}, _options) do
     %{width: width, height: height, filename: path, alt: alt} = value
     url = imgproxy_url(path)
 
