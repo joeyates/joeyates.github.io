@@ -25,14 +25,26 @@ config :imgproxy,
   prefix: imgproxy_base_url,
   key: imgproxy_key,
   salt: imgproxy_salt
+
+basic_auth_user =
+  System.get_env("BLOG_CMS_BASIC_AUTH_USER") ||
+    raise """
+    environment variable BLOG_CMS_BASIC_AUTH_USER is missing.
+    """
+
+basic_auth_password =
+  System.get_env("BLOG_CMS_BASIC_AUTH_PASSWORD") ||
+    raise """
+    environment variable BLOG_CMS_BASIC_AUTH_PASSWORD is missing.
     """
 
 payloadcms_graphql_endpoint =
-  System.get_env("PAYLOADCMS_GRAPHQL_ENDPOINT") ||
+  System.get_env("BLOG_CMS_GRAPHQL_ENDPOINT") ||
     raise """
-    environment variable PAYLOADCMS_GRAPHQL_ENDPOINT is missing.
+    environment variable BLOG_CMS_GRAPHQL_ENDPOINT is missing.
     """
 
 config :payloadcms_graphql_client,
-  api_key: payloadcms_api_key,
+  basic_auth_user: basic_auth_user,
+  basic_auth_password: basic_auth_password,
   endpoint: payloadcms_graphql_endpoint
