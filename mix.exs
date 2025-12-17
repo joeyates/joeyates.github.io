@@ -32,7 +32,7 @@ defmodule Blog.MixProject do
        git: "https://github.com/bmuller/imgproxy.git",
        ref: "b181f2932b2f7f2448a3ff873d9b2b105d9a32ba"},
       # CMS
-      {:payloadcms_graphql_client, "~> 0.1.10"},
+      {:payloadcms_graphql_client, "~> 0.2.3"},
       # Code quality
       {:green, "~> 0.1.4", only: [:dev]}
     ]
