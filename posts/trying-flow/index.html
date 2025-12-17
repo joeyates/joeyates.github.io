@@ -1,0 +1,109 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Trying Flow - Joe Yates' Blog</title>
+<meta content="A quick run through of what Facebook's Flow offers" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+Trying Flow</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2016/02/04</div>
+</div>
+<h2 class="text-lg">
+A quick run through of what Facebook's Flow offers
+</h2>
+<p>I'm interested in the possibility of running type checks on Javascript code.</p><p>Proponents of type checking believe that bugs can be avoided by indicating the intended type (i.e. String, Number) of values (variables, functions and classes), opponents say it adds work but doesn't significantly reduce bugginess.</p><p>The most popular type system for the Javascript ecosystem is <a href="http://www.typescriptlang.org/" target="_blank">Typescript</a>.</p><p>An alternative is Facebook's <a href="http://flowtype.org/" target="_blank">flow</a>, it allows gradual typing - you add only as many type annotations as you want. Here, I'm giving it a spin by creating <a href="https://github.com/joeyates/flow-hello" target="_blank">flow-hello</a> - a "Hello World!" Example.</p><h1>Installation</h1><p>The type checking system is written in OCaml, and you need to install a binary or <a href="https://github.com/facebook/flow#building-flow" target="_blank">compile from source</a>.</p><p>I opted to use `npm` to install the binary globally:</p><pre title="language: shell"><code class="language-shell">$ sudo npm install flow-bin --global</code></pre><h1>Project setup</h1><p>Configure flow:</p><pre title="language: shell"><code class="language-shell">$ flow init</code></pre><h1>A Bug</h1><p>Here's a Javascript with a bug:</p><div class="text-sm text-gray-500 mb-0">src/01-buggy.js:</div><pre title="language: js"><code class="language-js">function logLength(x) {
+  console.log(x.length);
+}
+
+logLength("Hello");
+logLength(1);</code></pre><p>This code logs `undefined` when the number `1` is passed to the function <code>logLength</code>, as <code>1</code> does not have a <code>length</code> attribute:</p><pre title="language: shell"><code class="language-shell">$ node src/01-buggy.js
+5
+undefined</code></pre><p>As is, flow does not analyze the file:</p><pre title="language: shell"><code class="language-shell">$ flow check
+Found 0 errors</code></pre><h1>Activate flow</h1><p>Flow is activated by adding <code>@flow</code> to the first comment in any file:</p><div class="text-sm text-gray-500 mb-0">02-with-flow.js:</div><pre title="language: js"><code class="language-js">/* @flow */
+
+function logLength(x) {
+  console.log(x.length);
+}
+
+logLength("Hello");
+logLength(1);</code></pre><pre title="language: shell"><code class="language-shell">$ flow check
+src/02-with-flow.js:3
+3:   console.log(x.length);
+                   ^^^^^^ property 'length'. Property not found in
+3:   console.log(x.length);
+                 ^ Number
+
+Found 1 error</code></pre><p>That's good, as it explains how we get <code>undefined</code> in the output, but it's not clear that this happens due to the second invocation of the function.</p><h1>Annotate function parameters</h1><p>Now, let's indicate the intended type of the <code>x</code> parameter so that calls with parameters of the wrong type will be pointed out.</p><div class="text-sm text-gray-500 mb-0">src/03-parameter-annotations.js:</div><pre title="language: js"><code class="language-js">/* @flow */
+
+function logLength(x: string) {
+  console.log(x.length);
+}
+logLength("Hello");
+logLength(1);</code></pre><p>As <code>flow check</code> checks <b>all</b> the `.js` files it finds, I'll pass the file contents to flow via stdin:</p><pre title="language: shell"><code class="language-shell">$ flow check-contents &lt; src/03-parameter-annotations.js
+7: logLength(1);
+   ^^^^^^^^^^^^ function call
+7: logLength(1);
+             ^ number. This type is incompatible with
+2: function logLength(x: string) {
+                         ^^^^^^ string
+Found 1 error</code></pre><p>That's good - we know which call caused the problem.</p><h1>Stripping type annotations with Babel</h1><p>Unfortunately, we can no longer simply run the code:</p><pre title="language: shell"><code class="language-shell">$ node src/03-parameter-annotations.js
+function logLength(x: string) {
+                    ^
+SyntaxError: Unexpected token :
+...</code></pre><p>We can use <a href="http://babeljs.io/" target="_blank">Babel</a> to <a href="https://babeljs.io/docs/plugins/transform-flow-strip-types/" target="_blank">remove type annotations</a> when we want to run the code.</p><p>Setting up Babel requires a bit of work:</p><p>In package.json:</p><div class="text-sm text-gray-500 mb-0">package.json:</div><pre title="language: shell"><code class="language-shell">{
+  "scripts": {
+    "babel": "babel ..."
+  }
+}</code></pre><pre title="language: shell"><code class="language-shell">$ npm install --save-dev babel-cli babel-plugin-transform-flow-strip-types</code></pre><p>In .babelrc:</p><div class="text-sm text-gray-500 mb-0">.babel:</div><pre title="language: shell"><code class="language-shell">{
+  "plugins": ["transform-flow-strip-types"]
+}</code></pre><p>Now we can run babel:</p><pre title="language: shell"><code class="language-shell">$ node_modules/.bin/babel src/03-parameter-annotations.js
+
+function logLength(x) {
+  console.log(x.length);
+}
+
+logLength("Hello");
+logLength(1);</code></pre><p>We get normal Javascript as output.</p><h1>Conclusion</h1><p>So, I got what I wanted: help with figuring out an error caused by calling a function with a parameter of the wrong type.</p><p>But, it's truly a "Hello World!", there is a whole type specification system yet to learn and try out.</p><p>I like the idea of being able to annotate just as much of my code as I like, so I think I'll be using Flow on my next Javascript project.</p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/dotfiles/">← Newer</a></li>
+<li>
+
+<a href="/posts/create-a-mix-task-for-an-elixir-project/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2016</p>
+</div></footer>
+</div></body></html>

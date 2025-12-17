@@ -1,0 +1,64 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Dockerfile ENTRYPOINT, CMD and `run` Arguments - Joe Yates' Blog</title>
+<meta content="The interactions between Docker's ENTRYPOINT and CMD instructions" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+Dockerfile ENTRYPOINT, CMD and `run` Arguments</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2023/01/23</div>
+</div>
+<h2 class="text-lg">
+The interactions between Docker's ENTRYPOINT and CMD instructions
+</h2>
+<p>Docker uses a combination of 'Endpoint' and 'Command' values to compose the command it uses to launch images. Exactly which values are used depends on which are set and their format.</p><p>The <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">documentation</a> gives all the necessary information, but it is spread across a number of entries.</p><p>In this post, I'll try to reduce the bewildering list of possible permutations (see below) to a couple of simple choices.</p><p>I ran these tests on Docker version 20.10.12 on Ubuntu, but as far as I know, this behaviour is pretty stable.</p><h1>Running a Docker Image</h1><p>When Docker launches images, it starts a single process via a single command.</p><p>If I run an Alpine Linux image without any extra arguments, this is what happens:</p><pre title="language: shell"><code class="language-shell">$ docker run -ti alpine:3.17 
+/ # </code></pre><p>Docker has run <code>/bin/sh</code> thanks to the <code>CMD</code> instruction in the <a href="https://github.com/alpinelinux/docker-alpine/blob/v3.17/x86_64/Dockerfile#L3" target="_blank">Alpine Linux Dockerfile</a>.</p><p>If we append the <code>ls</code> command this is what we get:</p><pre title="language: shell"><code class="language-shell">$ docker run -ti alpine:3.17 ls
+bin    etc    lib    mnt    proc   run    srv    tmp    var
+dev    home   media  opt    root   sbin   sys    usr</code></pre><p></p><p>Here, <code>ls</code> is the "<a href="https://docs.docker.com/engine/reference/run/#cmd-default-command-or-options" target="_blank">run argument</a>". It has taken precedence over <code>/bin/sh</code> specified in the Dockerfile.</p><p>Knowing exactly what command and arguments get executed depends on a combination of what's in the Dockerfile (and, recursively, the Dockerfiles that it is based on) plus the command line arguments passed to <code>docker run</code>.</p><p>By the way, we can also confirm the idea that the command Docker executes is the only process that is started:</p><pre title="language: shell"><code class="language-shell">$ docker run -ti alpine:latest ps afux
+PID   USER     TIME  COMMAND
+    1 root      0:00 ps afux</code></pre><p></p><p>So Docker has run my <code>ps</code> command as <code>PID 1</code> - the <b>only</b> process running in the container.</p><h1>Dockerfiles</h1><p>Dockerfiles can contain the <a href="https://docs.docker.com/engine/reference/builder/#entrypoint" target="_blank"><code>ENTRYPOINT</code> instruction</a> and the <a href="https://docs.docker.com/engine/reference/builder/#cmd" target="_blank">CMD instruction</a>.</p><p>Only one <code>CMD</code> or <code>ENTRYPOINT</code> should be included per Dockerfile.</p><p>If more than one is present, only the <em>last</em> will be used.</p><h2>Base Image Dockerfiles</h2><p>If a Dockerfile uses a base image (via <code>FROM</code>), it inherits that image's <code>ENTRYPOINT</code> and <code>CMD</code>.</p><p>Most popular base images <b>do not set </b><b><code>ENTRYPOINT</code></b>.</p><p>Here's a list:</p><ul><li><a href="https://github.com/alpinelinux/docker-alpine/blob/v3.17/x86_64/Dockerfile" target="_blank">Alpine</a></li><li><a href="https://github.com/docker-library/busybox/blob/b9ecc0684d3c71fab45eb9166b8033f575777599/Dockerfile.template" target="_blank">Busybox</a></li><li><a href="https://github.com/nginxinc/docker-nginx/blob/master/Dockerfile-debian.template" target="_blank">Nginx</a></li><li><a href="https://git.launchpad.net/cloud-images/+oci/ubuntu-base/tree/Dockerfile?h=bionic-18.04" target="_blank">Ubuntu</a></li></ul><p>An exception to this is <a href="https://github.com/docker-library/redis/blob/66ae35c69d6390be8a886198bc9f5eaf93d726c4/Dockerfile.template" target="_blank">Redis</a>, which launches a script called <a href="https://github.com/docker-library/redis/blob/66ae35c69d6390be8a886198bc9f5eaf93d726c4/docker-entrypoint.sh" target="_blank">docker-entrypoint.sh</a>, which does some setup and then executes whatever was passed to <code>CMD.</code></p><p>So, in the most common case, when we need to override stuff, it's only the <code>CMD</code> instruction that will already have been set, or, if <code>ENTRYPOINT</code> is set, there will be little need to change it.</p><h2>Formats</h2><p><code>ENTRYPOINT</code> and <code>CMD</code> have two formats, <code>shell</code> and <code>JSON</code>.</p><p>As we will see below, the format that is used changes the rules about how the final command line is composed.</p><h3>shell Format</h3><p>When a simple text is supplied, it is called 'shell' format:</p><pre title="language: dockerfile"><code class="language-dockerfile">ENTRYPOINT echo Ciao
+CMD echo Ciao</code></pre><h3>JSON Array format</h3><p>If a <b>well formed</b> JSON array is supplied, it is called the 'exec' form or 'array' form:</p><pre title="language: dockerfile"><code class="language-dockerfile">ENTRYPOINT ["echo", "Ciao"]
+CMD ["echo", "Ciao"]</code></pre><p>N.B. Well-formed JSON Array is required - quotes must be <code>"</code>.</p><p>If single <code>'</code> quotes are used, the value is treated as a shell format.</p><h1><code>docker run</code> Options and Arguments</h1><h2>--entrypoint</h2><p>If the <code>--entrypoint</code> parameter is passed to <code>docker run</code>, the value overrides any <code>ENDPOINT</code> instruction that has been specified in a Dockerfile. Note that is also <b>clears any Command</b> that has been supplied.</p><p>You can't use the 'JSON Array' format when specifying <code>--entrypoint</code>, the value you pass is always interpreted as being in 'shell' format.</p><p>Passing an empty string to <code>--entrypoint</code> is a handy way of nullifying any <code>ENTRYPOINT</code> (and <code>CMD</code>) that may have been set, in order to fall back to using <code>docker run</code> arguments exclusively.</p><p>If we don't specify arguments, we get an error:</p><p>$ docker run -ti --entrypoint="" busybox:latest<br><code>docker: Error response from daemon: No command specified.</code></p><h2>Arguments</h2><p>Any <a href="https://docs.docker.com/engine/reference/run/#cmd-default-command-or-options" target="_blank">arguments passed to <code>docker run</code> <b>after</b> the image name</a> override any <code>CMD</code> instruction.</p><h1>How the Entrypoint and Command Interact</h1><p>Based on the above, from now on, I will only refer to the Entrypoint and Command, however they have been indicated.</p><p>If an Entrypoint is supplied in <b>shell</b> format, any Command is ignored.</p><p>If, on the other hand, there is a <b>JSON</b> format Entrypoint, any <b>JSON</b> format Command is appended.</p><p>But, if the Command is in <b>shell</b> format, <code>/bin/sh -c</code> is prepended to the Command.</p><p>I think this last case, of all the combinations available, is the most surprising to the user, and only makes sense in cases where the Entrypoint is a setup script, as in the case of the Redis image above.</p><h2>Running Directly</h2><p>When a JSON Entrypoint is supplied, the command line which Docker builds from any Entrypoint and Command is executed directly, not via <code>/bin/sh</code>.</p><p>As the final command is not run via a shell, this format does <b>not</b> do variable substitution. This is a point to remember - and often causes confusion. A subtle change, from shell format to JSON format, can cause errors when starting a container.</p><p>Running commands directly fails if the first array entry is not in the <b>image</b>'s <code>$PATH</code> and is not a full path to an executable.</p><h2>Running a Shell</h2><p>When the 'shell' format is used, the executable and arguments obtained from combining any Entrypoint and Command are passed to a command shell, e.g. <code>/bin/sh -c</code>.</p><p>Running commands via <code>sh</code> fails if the first array entry is not in the <b>shell</b>'s <code>$PATH</code> and is not a full path to an executable.</p><h1>Permutations of Entrypoint and Command</h1><p>Below is a list of the permutations of Entrypoint and Command, indicating how Docker interprets them.</p><p>'JSON' refers to the 'exec'/'array' JSON format.</p><table><tr><th><p>Entrypoint type</p></th><th><p>Command type</p></th><th><p>Command used?</p></th><th><p>Outcome</p></th></tr><tr><td><p>-</p></td><td><p>-</p></td><td><p>n</p></td><td><p>Uses base image's `ENTRYPOINT`. If there is none, tries to run '/bin/sh'.</p></td></tr><tr><td><p>-</p></td><td><p>shell</p></td><td><p>y</p></td><td><p>Executes Command via `sh`.</p></td></tr><tr><td><p>-</p></td><td><p>JSON</p></td><td><p>y</p></td><td><p>Executes Command command directly.</p></td></tr><tr><td><p>shell</p></td><td><p>-</p></td><td><p>n</p></td><td><p>Passes Entrypoint command to `sh`.</p></td></tr><tr><td><p>shell</p></td><td><p>shell</p></td><td><p>n</p></td><td><p>Passes Entrypoint command to `sh`, **ignoring** Command.</p></td></tr><tr><td><p>shell</p></td><td><p>JSON</p></td><td><p>n</p></td><td><p>Passes Entrypoint command to `sh`, **ignoring** Command.</p></td></tr><tr><td><p>JSON</p></td><td><p>-</p></td><td><p>n</p></td><td><p>Executes Entrypoint directly.</p></td></tr><tr><td><p>JSON</p></td><td><p>shell</p></td><td><p>y</p></td><td><p>Executes Entrypoint, appending '/bin/sh -c', then Command</p></td></tr><tr><td><p>JSON</p></td><td><p>JSON</p></td><td><p>y</p></td><td><p>Executes Entrypoint directly, appending Command</p></td></tr></table><h1>What Should I Use?</h1><p>After trawling through all this, my conclusion is as follows:</p><ul><li><b>in general, avoid using an Entrypoint</b>,</li><li>only use an Entrypoint if you need to do setup before running the container,</li><li>if necessary, use <code>CMD</code> in your Dockerfiles to override what is set in your base image, and pass arguments to <code>docker run</code> if your own <code>CMD</code> needs to be overridden,</li><li>use 'shell' format for <code>CMD</code> if you want shell pre-processing (e.g. environment variable substitution), otherwise, use the 'JSON' format,</li><li>pass <code>--entrypoint=""</code> plus a Command to Docker <code>run</code> if your base image has an <code>ENTRYPOINT</code> instruction that you don't want to run.</li></ul>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/achieving-a-30x-improvement-in-imap-backup-times/">← Newer</a></li>
+<li>
+
+<a href="/posts/dotfiles/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2023</p>
+</div></footer>
+</div></body></html>

@@ -1,0 +1,80 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>i18n Internationalization without Rails - Joe Yates' Blog</title>
+<meta content="How to use the i18n gem in a non-Rails Ruby project" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+i18n Internationalization without Rails</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2010/03/04</div>
+</div>
+<h2 class="text-lg">
+How to use the i18n gem in a non-Rails Ruby project
+</h2>
+<p>I searched the Internet in vain for examples of using the Ruby <a href="http://rubygems.org/gems/i18n" target="_blank">i18n gem</a> outside of Rails apps.</p><p>Below is a minimal example: the aim is (as usual) to produce a greeting - this time in English and Italian.</p><h1>Installation</h1><pre title="language: ruby"><code class="language-ruby">$ irb
+>> require 'rubygems'
+=> true
+>> require 'sun_times'
+=> true
+>> SunTimes.set( Date.today, 44, 11 ).localtime
+=> Tue Mar 09 18:14:08 +0100 2010</code></pre><p></p><h1>The <code>t</code> method</h1><p>The most common use of i18n is via <code>I18n.translate</code> which has an abbreviated alias <code>I18n.t</code>.</p><h1>Translations</h1><div class="text-sm text-gray-500 mb-0">en.yml:</div><pre title="language: plaintext"><code class="language-plaintext">en:
+  hello world: Hello World!</code></pre><div class="text-sm text-gray-500 mb-0">it.yml:</div><pre title="language: plaintext"><code class="language-plaintext">it:
+  hello world: Ciao Mondo!</code></pre><p>These translations can be accessed as follows:</p><pre title="language: ruby"><code class="language-ruby">I18n.t('hello world')</code></pre><p>That will use the current locale setting. You can change it as follows:</p><pre title="language: ruby"><code class="language-ruby">I18n.locale = :it</code></pre><h1>The Program</h1><p>After loading the <code>i18n</code> gem, set up <code>I18n.load_path</code> before attempting to retrieve any translations.</p><div class="text-sm text-gray-500 mb-0">salutation.rb:</div><pre title="language: ruby"><code class="language-ruby">require 'rubygems' if RUBY_VERSION &lt; '1.9'
+require 'i18n'
+
+I18n.load_path = ['en.yml', 'it.yml']
+
+puts 'In English...'
+I18n.locale = :en
+puts I18n.t('hello world')
+
+puts 'In Italian...'
+I18n.locale = :it
+puts I18n.t('hello world')</code></pre><p>The result:</p><pre title="language: ruby"><code class="language-ruby">$ ruby salutation.rb
+In English...
+Hello World!
+In Italian...
+Ciao Mondo!</code></pre><p></p><p></p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/show-your-git-branch-name-in-your-gnu-screen-status-line/">← Newer</a></li>
+<li>
+
+<a href="/posts/jruby-on-rails/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2010</p>
+</div></footer>
+</div></body></html>

@@ -1,0 +1,83 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Setting up PostGIS - Joe Yates' Blog</title>
+<meta content="The steps necessary to set up PostGIS and create a database to use it" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+Setting up PostGIS</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2010/02/22</div>
+</div>
+<h2 class="text-lg">
+The steps necessary to set up PostGIS and create a database to use it
+</h2>
+<h1>Install</h1><p>You can install PostGIS as a package or from sources. Sometimes the version available from Linux distributions is a bit out of step with the PostgreSQL version that gets installed (i.e. Ubuntu currently installs PostgreSQL 8.4, but only has PostGIS 8.3)</p><h2>From Sources</h2><p><a href="http://postgis.refractions.net/download/" target="_blank">Choose which version to download</a></p><pre title="language: shell"><code class="language-shell">$ wget http://postgis.refractions.net/download/postgis-1.4.1.tar.gz
+$ tar -xkzf postgis-1.4.1.tar.gz
+$ cd postgis-1.4.1
+$ ./configure
+$ make
+$ sudo make install</code></pre><p>On my system (Ubuntu), the net result is that you get various files copied into /usr/share/postgresql/8.4/contrib:</p><pre title="language: shell"><code class="language-shell">$ ls /usr/share/postgresql/8.4/contrib
+postgis.sql                   postgis_upgrade_13_to_14.sql  postgis_upgrade.sql  uninstall_postgis.sql
+postgis_upgrade_12_to_14.sql  postgis_upgrade_14_minor.sql  spatial_ref_sys.sql</code></pre><h1>Create a PostGIS Template Database</h1><p>If you create a specific template with PostGIS, and use it instead of template1 (the default) template, you will be able to create PostGIS-enabled databases more quickly.</p><pre title="language: shell"><code class="language-shell">$ sudo -u postgres createdb template_postgis -E UTF-8</code></pre><p>Set the template flag</p><pre title="language: sql"><code class="language-sql">UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'template_postgis';</code></pre><p>Make sure pl/pgsql is installed</p><pre title="language: shell"><code class="language-shell">$ sudo -u postgres createlang -d template_postgis plpgsql</code></pre><p>Insert PostGIS functions and tables</p><pre title="language: shell"><code class="language-shell">$ sudo -u postgres psql template_postgis &lt; /usr/share/postgresql/8.4/contrib/postgis.sql
+$ sudo -u postgres psql template_postgis &lt; /usr/share/postgresql/8.4/contrib/spatial_ref_sys.sql</code></pre><h2>Correct Permissions</h2><p>The PostGIS tables need to be writeable by the owner of the database</p><pre title="language: shell"><code class="language-shell">$ sudo -u postgres psql template_postgis
+GRANT ALL ON geometry_columns TO PUBLIC;
+GRANT ALL ON spatial_ref_sys TO PUBLIC;</code></pre><h1>Create a PostGIS-Enabled Database</h1><pre title="language: shell"><code class="language-shell">$ sudo -u postgres createuser [USER NAME]
+Shall the new role be a superuser? (y/n) n
+Shall the new role be allowed to create databases? (y/n) n
+Shall the new role be allowed to create more new roles? (y/n) n
+$ sudo -u postgres createdb [DATABASE NAME] -O [USER NAME] -T template_postgis</code></pre><p>Check it works</p><pre title="language: shell"><code class="language-shell">$ psql -U [USER NAME] [DATABASE NAME]</code></pre><p>First let's create a 'locations' table:</p><pre title="language: sql"><code class="language-sql">CREATE TABLE locations (id serial, name character varying);
+SELECT AddGeometryColumn('', 'locations', 'geom', 32661, 'POINT', 2);</code></pre><p>Insert a record:</p><pre title="language: sql"><code class="language-sql">INSERT INTO "locations" ("name", "geom") VALUES(E'Tokyo International Airport', ST_GeomFromText('POINT(139.783333 35.55)', 32661)) RETURNING "id";
+ id
+----
+  1
+(1 row)
+
+INSERT 0 1</code></pre><p>Find all results in a given box:</p><pre title="language: sql"><code class="language-sql">SELECT * FROM "locations" WHERE ("locations"."geom" && SetSRID(E'BOX3D(130.0 30.0, 140.0 40.0)'::box3d, 32661));
+ id |            name             |                        geom
+----+-----------------------------+----------------------------------------------------
+  1 | Tokyo International Airport | 0101000020957F0000151C5E10117961406666666666C64140
+
+(1 row)</code></pre><p></p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/handling-multiple-versions-of-ruby/">← Newer</a></li>
+<li>
+
+<a href="/posts/shared-git-repositories/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2010</p>
+</div></footer>
+</div></body></html>

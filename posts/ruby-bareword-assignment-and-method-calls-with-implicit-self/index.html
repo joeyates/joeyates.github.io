@@ -1,0 +1,121 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Ruby Bareword Assignment and Method Calls With Implicit Self - Joe Yates' Blog</title>
+<meta content="How to distinguish between method calls and variable assignments" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+Ruby Bareword Assignment and Method Calls With Implicit Self</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2012/01/16</div>
+</div>
+<h2 class="text-lg">
+How to distinguish between method calls and variable assignments
+</h2>
+<h2>Problem</h2><p>If I do this:</p><pre title="language: ruby"><code class="language-ruby">puts foo
+foo = 3</code></pre><p>there is always the doubt whether I'm accessing a local variable, or calling methods <code>foo</code> and <code>foo=</code>.</p><h2>TL;DR</h2><p>When you want to call an instance's own methods, use <code>self</code>:</p><pre title="language: ruby"><code class="language-ruby">self.foo             # Calls the foo method
+self.foo = 'bar'     # Calls the foo= method</code></pre><h2>Example 1</h2><pre title="language: ruby"><code class="language-ruby">def example1
+ 'example1 method'
+end
+example1 #=> "example1 method"
+example1 = 'assigned value'
+example1 #=> "assigned value"</code></pre><p>Here, we define a method, and then make an assignment. As we assign to a bareword, Ruby creates a new local variable.</p><p>As soon as a value is assigned to the local variable, the method no longer gets called.</p><h2>Example 2</h2><p>But, what if we also have an assignment method?</p><pre title="language: ruby"><code class="language-ruby">def example2
+ 'example2 method'
+end
+
+def example2=(value)
+ puts "example2= called" # (this never gets called)
+end
+
+example2 #=> "example2 method"
+example2 = 'assigned value'
+example2 #=> "assigned value"</code></pre><p>Adding the method <code>example2=</code> does not change things. When we assign to a bareword, Ruby takes it as assignment to a local variable.</p><h2>Example with a Class</h2><pre title="language: ruby"><code class="language-ruby">class Foo
+ attr_accessor :bar
+
+ def initialize
+   @bar = 42
+ end
+
+ def method1
+   puts bar
+ end
+
+ def method2
+   bar = 99
+   puts bar
+ end
+
+ def method3
+   bar = 99
+   puts self.bar
+ end
+end
+
+foo = Foo.new
+foo.bar  #=> 42
+foo.method1 #=> 42
+foo.method2 #=> 99
+foo.method3 #=> 42</code></pre><p><code>method2</code> is the problem case. <code>bar</code> is assigned to, creating a local variable, so subsequent calls to <code>bar</code> return 99.</p><p><code>method3</code> disambiguates by explicitly calling the <code>bar</code> method on <code>self</code>.</p><h2>The Cause</h2><p>There are two things going on here:</p><ol start="1"><li>bareword assignment creates local variables,</li><li>local variables mask methods of the same name.</li></ol><h2>Refactoring Might Break Code</h2><p>One solution is to use `self.method` only in cases where local variables mask methods. The problem with this approach is that code may be altered, introducing local variables, and so altering the behaviour of following code:</p><h3>Original Code</h3><pre title="language: ruby"><code class="language-ruby">class Foo
+ attr_accessor :bar
+
+ def baz
+   puts bar
+ end
+end
+
+foo = Foo.new
+foo.bar = 42
+foo.baz #=> 42</code></pre><h3>Modified Code</h3><pre title="language: ruby"><code class="language-ruby">class Foo
+  attr_accessor :bar
+
+  def baz
+    bar = 99 # &lt;= variable assignment introduced
+    puts bar
+  end
+end
+
+foo = Foo.new
+foo.bar = 42
+foo.baz #=> 99</code></pre><h2>Solution</h2><p>The best solution is to always call instance methods on <code>self</code>.</p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/my-everyday-find-command/">← Newer</a></li>
+<li>
+
+<a href="/posts/html-history-api/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2012</p>
+</div></footer>
+</div></body></html>

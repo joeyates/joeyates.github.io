@@ -1,0 +1,62 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>dotfiles - Joe Yates' Blog</title>
+<meta content="A super-simple setup to handle dotfiles via Git" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+dotfiles</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2018/12/16</div>
+</div>
+<h2 class="text-lg">
+A super-simple setup to handle dotfiles via Git
+</h2>
+<p>This post presents a "Pure Git" approach to managing dotfiles:</p><ul><li>No symlinks,</li><li>No scripts,</li><li>Just Git configuration.</li></ul><p>It is inspired by a <a href="https://news.ycombinator.com/item?id=11070797" target="_blank">comment on Hacker News</a>.</p><h1>How it works</h1><p>The dotfiles repo is cloned to <code>~/.dotfiles</code>, but Git is told that</p><p>the working directory is the home directory.</p><p>From then on, it's just a Git repo.</p><p>You can add any file in your home directory or subdirectories below it.</p><h1>Getting Started</h1><p>You <b>could</b> clone someone else's dotfiles, but I advise against it - it's best to understand what you have by stealing here and there.</p><h2>Create your Dotfiles Repo</h2><ul><li>Create an empty Git repo somewhere (I use <a href="https://gitlab.com/" target="_blank">GitLab</a>),</li><li>Follow the next section.</li></ul><p>It is a good idea to add a `README` file to the root of your repo with a copy the setup steps below. That way, you know where to look every time you need to set up on a fresh computer.</p><h2>Install your Repo</h2><p>If you're installing on a new computer, you can do the following:</p><pre title="language: shell"><code class="language-shell">git clone --bare MY_REPO_URL ~/.dotfiles
+cd ~/.dotfiles
+git config --local core.bare false
+git config --local core.worktree &lt;my home>
+git config --local status.showUntrackedFiles no
+git reset</code></pre><p>These steps have cloned and set up the Git repo, but so far nothing has changed.</p><p>Now, run the following to check what will change when you "install" the dotfiles:</p><pre title="language: shell"><code class="language-shell">git status</code></pre><p>Check you are not going to overwrite any local files with local changes you want to keep.</p><p>Beware - the next line installs the current version of files in your dotfiles repo, potentially overwriting different versions in your home directory (or subdirectories).</p><pre title="language: shell"><code class="language-shell">git reset --hard HEAD --</code></pre><p>That's it, your home directory is now managed by Git!</p><h1>Maintenance</h1><p><code>cd</code> to your <code>~/.dotfiles</code> directory.</p><p>Run `git status` to see what has changed.</p><p><b>Note that all file operations have a `..` prefix</b></p><pre title="language: shell"><code class="language-shell">git add ../foobar</code></pre><h1>Outside the <code>.dotfiles</code> directory</h1><p>Use the following to manage your repo without having to <code>cd</code> to <code>~/.dotfiles</code>:</p><pre title="language: shell"><code class="language-shell">git --git-dir=$HOME/.dotfiles --work-tree=$HOME &lt;command> [ARGS]</code></pre><p>You can add this to your `.bashrc` or `.zshrc` as follows:</p><pre title="language: shell"><code class="language-shell">alias dotgit="git --git-dir=$HOME/.dotfiles --work-tree=$HOME"</code></pre><p>If you add **that** to your dotfiles repo, that's really all the configuration you need.</p><h1>Notes</h1><h2><code>.gitignore</code></h2><p>The is no <code>.gitignore</code> in this system, as Git is instructed to ignore all files that are not part of the repo.</p><h2>Automation</h2><p>If you want to automate adding local changes to your repo, it should be quite easy. Though, you'll need to decide how to deal with remote changes if you are using your dotfiles on more than one computer.</p><h2>Branches</h2><p>If you have big differences between your needs on your various computers, you can even keep differences in branches!</p><h1>That's It</h1><p>Enjoy your lightweight dotfiles!</p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/dockerfile-entrypoint-cmd-and-run-arguments/">← Newer</a></li>
+<li>
+
+<a href="/posts/trying-flow/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2018</p>
+</div></footer>
+</div></body></html>

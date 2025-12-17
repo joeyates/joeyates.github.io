@@ -1,0 +1,114 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>googletest Hello World - Joe Yates' Blog</title>
+<meta content="Test C and C++ applications with googletest" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+googletest Hello World</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2010/05/26</div>
+</div>
+<h2 class="text-lg">
+Test C and C++ applications with googletest
+</h2>
+<p>This is a quick run down of how to get started with using <a href="http://code.google.com/p/googletest" target="_blank">googletest</a> on Ubuntu.</p><h1>Preparation</h1><p>Assuming you have a working GCC build environment, all you have to do is install the googletest packages:</p><pre title="language: shell"><code class="language-shell">$ sudo apt-get install libgtest0 libgtest-dev</code></pre><h1>Makefile</h1><p>The only think of note about the Makefile is that it includes 'libgtest_main' - which implements main() and calls RUN_ALL_TESTS()</p><pre title="language: shell"><code class="language-shell">NAME = hello-world
+LIBS = -lgtest_main
+
+debug: all
+
+run-debug:
+  ./${NAME}
+
+all: $(NAME).o
+  c++ -lstdc++ $(LIBS) -o $(NAME) $(NAME).o
+
+compile: $(NAME).o
+
+clean:
+  find . -name '*.o' -exec rm -f {} ';'
+  find . -name $(NAME) -exec rm -f {} ';'
+
+$(NAME).o: $(NAME).c++
+  gcc -c -I. -o $(NAME).o $(NAME).c++
+
+.c++.o:
+  gcc -c -I. -o $@ $&lt;</code></pre><h1>Source</h1><p>I've put everything into a single source file to keep things minimal:</p><div class="text-sm text-gray-500 mb-0">salutatio:</div><pre title="language: cpp"><code class="language-cpp">/////////////////////////////
+// In the header file
+
+#include &lt;sstream>
+using namespace std;
+
+class Salutation
+{
+public:
+  static string greet(const string& name);
+};
+
+///////////////////////////////////////
+// In the class implementation file
+
+string Salutation::greet(const string& name) {
+  ostringstream s;
+  s &lt;&lt; "Hello " &lt;&lt; name &lt;&lt; "!";
+  return s.str();
+}
+
+///////////////////////////////////////////
+// In the test file
+#include &lt;gtest/gtest.h&gt;
+
+TEST(SalutationTest, Static) {
+  EXPECT_EQ(string("Hello World!"), Salutation::greet("World"));
+}</code></pre><h1>Compilation</h1><p>Just run:</p><pre title="language: shell"><code class="language-shell">make</code></pre><h1>Output</h1><p>This test produces the following:</p><pre title="language: shell"><code class="language-shell">$ ./hello-world
+Running main() from gtest_main.cc
+[==========] Running 1 test from 1 test case.
+[----------] Global test environment set-up.
+[----------] 1 test from SalutationTest
+[ RUN      ] SalutationTest.Static
+[       OK ] SalutationTest.Static
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test case ran.
+[  PASSED  ] 1 test.</code></pre><h1>Conclusion</h1><p>It couldn't really be much simpler!</p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/sinatra-a-real-site/">← Newer</a></li>
+<li>
+
+<a href="/posts/object-representation-in-c-plus-plus/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2010</p>
+</div></footer>
+</div></body></html>

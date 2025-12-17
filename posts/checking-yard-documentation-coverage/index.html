@@ -1,0 +1,77 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Checking YARD Documentation Coverage - Joe Yates' Blog</title>
+<meta content="Find what needs documenting in a project when using Yard" name="description">
+<meta content="width=device-width" name="viewport">
+<link href="/sitemap.xml" rel="sitemap" title="Sitemap" type="application/xml">
+<link href="/assets/app-cb475e5b8a234b2a45f4bc6cceeb180c.css" media="all" rel="stylesheet">
+<script defer="true" src="/assets/application-04330b44b64bd6872cdc831811bd0720.js" type="text/javascript"></script>
+</head>
+<body class="font-sans text-xl bg-olive flex justify-center">
+<div class="max-w-full min-h-screen md:w-[40rem] bg-light-olive py-4 px-10 flex flex-col">
+<header>
+<nav>
+<ul class="flex list-none">
+<li class="mr-8">
+<a href="/">Home</a></li>
+<li class="mr-8">
+<a href="/posts/">Archives</a></li>
+<li>
+<a href="/categories/">Categories</a></li></ul></nav>
+<div class="prose">
+<h1>
+Checking YARD Documentation Coverage</h1></div></header>
+
+<main class="max-w-full grow mx-1">
+
+<section class="space-y-4 prose">
+<div class="flex justify-end mb-4">
+<div>2023/11/24</div>
+</div>
+<h2 class="text-lg">
+Find what needs documenting in a project when using Yard
+</h2>
+<p>If you use <a href="https://yardoc.org/" target="_blank">YARD</a> to document a Ruby project, it's handy to know what is not yet documented.</p><p>Documentation can be of various types, there are class descriptions, parameter definitions, return type definitions and so on.</p><p>I'm concentrating on documenting the public interface to my code, so I'd like to list everything with public visibility that's not covered.</p><h1>yard stats</h1><p>YARD has a <code>stats</code> command</p><pre title="language: shell"><code class="language-shell">> yard stats
+Files:          77
+Modules:         8 (    8 undocumented)
+Classes:        77 (   76 undocumented)
+Constants:      32 (   32 undocumented)
+Attributes:     60 (    0 undocumented)
+Methods:       259 (  176 undocumented)
+ 33.03% documented</code></pre><p></p><p>That gives you an idea of documentation coverage, but doesn't tell you what needs documenting.</p><p>By the way, I'm running these examples on various versions of the <a href="https://rubygems.org/gems/imap-backup" target="_blank">imap-backup</a> gem.</p><h1>Yardstick</h1><p>There is a <a href="https://rubygems.org/gems/yardstick" target="_blank">gem called yardstick</a> which measures YARD documentation coverage.</p><pre title="language: shell"><code class="language-shell">> yardstick 'lib/**/*.rb'
+...
+lib/imap/backup/account/folder.rb:173: Imap::Backup::Account::Folder#utf7_encoded_name: The @api tag should be specified
+lib/imap/backup/account/folder.rb:173: Imap::Backup::Account::Folder#utf7_encoded_name: The @api tag must be either public, semipublic or private
+lib/imap/backup/account/folder.rb:173: Imap::Backup::Account::Folder#utf7_encoded_name: A method with private visibility must have an @api tag of private
+lib/imap/backup/account/folder.rb:173: Imap::Backup::Account::Folder#utf7_encoded_name: The public/semipublic method should have an example specified
+lib/imap/backup/account/folder.rb:173: Imap::Backup::Account::Folder#utf7_encoded_name: The method summary should be specified
+lib/imap/backup/account/folder.rb:173: Imap::Backup::Account::Folder#utf7_encoded_name: The @return tag should be specified
+...
+YARD-Coverage: 48.6%  Success: 2820  Failed: 2980  Total: 5800</code></pre><p></p><p>It indicates that everything that does not have documentation coverage, regardless of public/protected/private visibility.</p><p>If, by default, you want to document everything, yardstick will work fine for you.</p><p>In my case, I'm most interested in documenting <b>public</b> methods/classes/etc.</p><p>As far as I can see, the only way to make Yardstick ignore private code is by adding the <code>@api private</code> tag, which for me would be unnecessarily cumbersome.</p><h1>YARD queries</h1><p>My solution to this problem is to use YARD's <code>--query</code> system.</p><p>The query you supply is Ruby code that can access each code item as YARD scans your project.</p><p>For example, to list just methods, you do this:</p><pre title="language: shell"><code class="language-shell">> yard list --query 'object.is_a?(YARD::CodeObjects::MethodObject)'
+...
+lib/imap/backup/account/folder.rb:26: Imap::Backup::Account::Folder#client
+...</code></pre><p></p><p><code>object</code> is the item in your project, wrapped in a <code>YARD::CodeObjects</code> instance.</p><p><code>YARD::CodeObjects</code> can be methods, classes, constants etc.</p><p>This become useful when you filter on an aspect of the code and it's relative coverage.</p><p>For example</p><pre title="language: shell"><code class="language-shell">yard list \
+  --query 'object.is_a?(YARD::CodeObjects::MethodObject) && object.parameters.any? && !object.tag(:param)</code></pre><p></p><p>That's rather long, but can be shortened. YARD uses a <code>method_missing</code> trick to allow you to omit <code>object</code> (as long as the method you are calling is not implemented by its <a href="https://rubydoc.info/gems/yard/YARD/Verifier" target="_blank">Verifier</a> class).</p><p>So the example above can be shortened to</p><pre title="language: shell"><code class="language-shell">yard list --query 'object.is_a?(CodeObjects::MethodObject) && parameters.any? && !tag(:param)'</code></pre><p></p><h1>The Queries I Use</h1><p>Methods without parameter documentation</p><pre title="language: shell"><code class="language-shell">yard list --query 'object.is_a?(CodeObjects::MethodObject) && parameters.any? && !tag(:param)'</code></pre><p></p><p>Methods without a documented return type</p><pre title="language: shell"><code class="language-shell">yard list --query 'object.is_a?(CodeObjects::MethodObject) && !constructor? && !tag(:return)'</code></pre><p></p><p>Classes without a description</p><pre title="language: shell"><code class="language-shell">yard list --query 'object.is_a?(CodeObjects::ClassObject) && !tag(:private) && docstring.empty?'</code></pre><p></p><p>Public constants without a description</p><pre title="language: shell"><code class="language-shell">yard list --query 'object.is_a?(CodeObjects::ConstantObject) && !tag(:private) && docstring.empty?'</code></pre><p></p><h1>Conclusion</h1><p>These queries provide a fast and flexible ways of finding undocumented code.</p>
+</section>
+<ul class="paginate">
+<li>
+
+<a href="/posts/create-a-payloadcms-custom-slug-field/">← Newer</a></li>
+<li>
+
+<a href="/posts/create-a-distributable-elixir-executable-using-bakeware/">Older →</a></li></ul>
+</main>
+<footer class="bottom-0 mt-6">
+<hr class="mb-4">
+
+<div class="flex flex-row justify-between text-sm">
+<div>
+<span>Made with</span>
+<a href="https://github.com/joeyates/fermo">Fermo</a>
+</div>
+<p>&copy; Joe Yates 2023</p>
+</div></footer>
+</div></body></html>
