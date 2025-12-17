@@ -137,9 +137,9 @@ defmodule Blog.CMS.Post do
     ]
   end
 
-  defp render_upload(%{type: "upload", value: value} = _node, _options) do
-    %{width: width, height: height, url: path, alt: alt} = value
-    url = image_url(path)
+  defp render_upload(%{type: "upload", value: value} = node, _options) do
+    %{width: width, height: height, filename: path, alt: alt} = value
+    url = imgproxy_url(path)
 
     [
       ~s(<div class="flex flex-col items-center not-prose">),
@@ -149,9 +149,12 @@ defmodule Blog.CMS.Post do
     ]
   end
 
-  defp image_url(path), do: Path.join(image_base_url(), path)
+  def imgproxy_url(path) do
+    path = "local:///#{path}"
 
-  defp image_base_url do
-    Application.fetch_env!(:blog, :image_base_url)
+    path
+    |> Imgproxy.new()
+    |> Imgproxy.set_source_url_encoding(:plain)
+    |> to_string()
   end
 end
